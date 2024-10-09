@@ -1,0 +1,35 @@
+{
+    "salesforceOpportunityId": "112",
+    "salesforceClientId": "154152",
+    "chassis": "75287287575757575",
+    "customer": {
+      "type": 1,
+      "civility": 2,
+      "name": "FranckTest",
+      "firstname": "John",
+      "address1": "351 avenue des massettes",
+      "zipCode": "73000",
+      "city": "Challes-Les-Eaux",
+      "countryIso": "IT",
+      "countryValue": "ITALIE",
+      "cellphone": "0601020304",
+      "email": "franck.delahaye@bee2link.fr",
+      "marketingConsent": true,
+      "thirdConsent": false,
+      "isOptinCall": true,
+      "isOptinLetter": true,
+      "isOptinSms": true
+    },
+    "offer": {
+      "marketingChannel": "Email",
+      "marketingSource": "Brevo",
+      "pointOfSaleName": "BMW Milano",
+      "leadSource": "Site Web Bymycar",
+      "pointOfSaleId": 155,
+      "sellerName": "BMW Milano",
+      "sellerId": "1234",
+      "comment": "test"
+    },
+    "attributedUser": {"email":"franck.delahaye@bee2link.fr"},
+    "originalTrackOwner": "bmc"
+}

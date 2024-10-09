@@ -1,0 +1,10 @@
+day;code;hours;ticket;descr
+2024-10-03;PM;0,5;BL-544;daily
+2024-10-03;PM;0,3;BL-544;saisie de mes tps
+2024-10-03;DEV;0,3;BL-547;  
+2024-10-03;DEV;5;EA-386;WIP Todolist task 1.b.iii : setup wm Ubuntu 14 et upgrade Ubuntu 16 (cf statut 1.b.i.3)
+2024-10-03;PM;2;EA-386;Todolist task 9 : atelier Synchronisation des BDD entre le BO et le FO
+2024-10-04;PM;0,5;BL-544;daily
+2024-10-04;PM;0,3;BL-544;saisie de mes tps
+2024-10-04;DEV;0,3;BL-547;  
+2024-10-04;DEV;5,5;EA-386;WIP Todolist task 1.b.iii : setup vm  de dev Ubuntu 22.04 comme en preprod (cf statut 1.b.i.3)
