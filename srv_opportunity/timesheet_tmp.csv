@@ -1,10 +1,37 @@
-day;code;hours;ticket;descr
-2024-10-03;PM;0,5;BL-544;daily
-2024-10-03;PM;0,3;BL-544;saisie de mes tps
-2024-10-03;DEV;0,3;BL-547;  
-2024-10-03;DEV;5;EA-386;WIP Todolist task 1.b.iii : setup wm Ubuntu 14 et upgrade Ubuntu 16 (cf statut 1.b.i.3)
-2024-10-03;PM;2;EA-386;Todolist task 9 : atelier Synchronisation des BDD entre le BO et le FO
-2024-10-04;PM;0,5;BL-544;daily
-2024-10-04;PM;0,3;BL-544;saisie de mes tps
-2024-10-04;DEV;0,3;BL-547;  
-2024-10-04;DEV;5,5;EA-386;WIP Todolist task 1.b.iii : setup vm  de dev Ubuntu 22.04 comme en preprod (cf statut 1.b.i.3)
+day;code;hours;ticket;descr;
+2024-10-21;PM;0,5;BL-544;daily;
+2024-10-21;PM;1,5;BL-544;CO;
+2024-10-21;PM;0,3;BL-544;saisie de mes tps;
+2024-10-21;DEV;0,3;BL-547;  ;
+2024-10-21;PM;3;EA-392;CO EliteAuto- coord mise en place conversation teams technique collectif / ajout d’externes- recup de doc- gestion de prios de tâches;
+2024-10-21;PM;2;EA-392;gestion de mes rdv médicaux;
+2024-10-21;TMA;0,5;BL-552;coord avec Fanny pour gérer le dysfonctionnement des BO OF prod/preprod : je ne reçois plus le mail code d’authent lors du login.;
+2024-10-22;PM;0,5;BL-544;daily;
+2024-10-22;PM;2;EA-392;gestion de mes rdv médicaux;
+2024-10-22;PM;4,5;EA-392;setup conversation « elite mgt » et redaction  roadamp corrigée et talks pour clarifier les divers sujet en cours niveau gestion de projet - call « procédure de bascule de BO de prod » cf statut task 20;
+2024-10-22;PM;0,3;BL-544;saisie de mes tps;
+2024-10-22;TMA;0,5;BL-547;reset de la preprod;
+2024-10-22;DEV;0,3;BL-547;  ;
+2024-10-23;PM;0,5;BL-544;daily;
+2024-10-23;PM;0,3;BL-544;saisie de mes tps;
+2024-10-23;TMA;0,3;BL-547;  ;
+2024-10-23;TMA;0,5;BL-547;"Diag d’une erreur de connexion sftp dans le job IDD CH- cf post team:
+https://teams.microsoft.com/l/message/19:723ce28ea9484a15a28ad8f64ba03cc2@thread.tacv2/1729666008477?tenantId=c6bb9b36-a9a3-4625-940f-0432c108d243&groupId=c488ce6f-0e47-4f5f-9889-9c7a700c7b02&parentMessageId=1729496253336&teamName=Equipe%20E-Commerce&channelName=Support%20BMC%20-%20Legacy&createdTime=1729666008477";
+2024-10-23;TMA;1,5;BL-552;"coord avec collègues et team OF pour gérer le dysfonctionnement des BO OF prod/preprod : test depuis un autre compte pour voir si c’est propre à mon compte- tentative test aussi derrière le vpn ipsec => ko car le collègue utilise pas ce vpn là.
+coord avec team OF pour l’évol « vendeur inactif » cf ce cmt: https://log-ita.atlassian.net/browse/BL-552?focusedCommentId=29825";
+2024-10-23;PM;3;EA-392;gestion de mon traitement médical - talks avec Caroline et Laura sur les types de demandes à supporter (action co?) et la gestion du presta tunisien / son mode d’intervention.;
+2024-10-23;DEV;2;EA-386;WIP tasks 20.b (proc de bascule) et 20.c (deploy prod des crons : corrections de 2 bugs);
+2024-10-24;PM;0,5;BL-544;daily;
+2024-10-24;PM;0,3;BL-544;saisie de mes tps;
+2024-10-24;DEV;0,3;BL-547;  ;
+2024-10-24;PM;2;BL-552;"gestion nouvel échange mail sur l’évol « vendeur inactif » cf cmt https://log-ita.atlassian.net/browse/BL-552?focusedCommentId=29872
+call sur cette évol vendeur avec le nouvel intégrateur : Mickael de Cloudity";
+2024-10-24;PM;2,5;EA-392;gestion de mon traitement médical – entretien de suivi avec médecin;
+2024-10-23;DEV;2;EA-386;done tasks 21.a.i (deploy prod patch mariadb) et 21.a.ii (setup french time en prod);
+2024-10-24;PM;0,5;EA-386;coord CT pas dispo today annulation atelier Salesforce;
+2024-10-25;PM;0,5;BL-544;daily;
+2024-10-25;PM;0,3;BL-544;saisie de mes tps;
+2024-10-25;DEV;0,3;BL-547;  ;
+2024-10-25;PM;2;EA-392;gestion de mon traitement médical – repos d’écran;
+2024-10-25;DEV;2;EA-386;wip task 14.b pour 1 des 4 script commentés en preprod et coord avec CT là-dessus;
+2024-10-25;DEV;1,5;EA-393;review proc bascule avec CT – support fix bug de copy de rep du vieux bo dans le bo aws;a
