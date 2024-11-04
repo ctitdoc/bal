@@ -32,7 +32,7 @@ public function main() returns error? {
         string? email = "";
         if (play("salesPerson")) {
             //get users by point of sale ID
-            UserResponse users = check OFAuthClient->get("/users?pointOfSaleIds[]=155&total=true", headers);
+            UserResponse users = check OFAuthClient->get("/users?pointOfSaleIds[]=155&groupTypes[]=3&total=true", headers);
             prGet(sellingUrl + "/users?pointOfSaleIds[]=155&groupTypes[]=3&total=true", users);
             email = users.items[0].email;
         }
