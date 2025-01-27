@@ -38,7 +38,7 @@ public function jira() returns error? {
             "timeSpentSeconds": val.hours * 3600
         };
 
-        json|error response =  OFPost(jiraClient, jiraApiUrl, "/rest/api/3/issue/" + val.ticket + "/worklog", body, ());
+        json|error response =  OFPost(jiraClient, jiraApiUrl, "/rest/api/3/issue/" + val.ticket + "/worklog", body, {});
     });
 
     io:println("Jira works uploaded !");

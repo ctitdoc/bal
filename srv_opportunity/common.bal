@@ -5,20 +5,52 @@ import ballerinax/mysql;
 
 //see https://ballerina.io/learn/by-example/http-client-send-request-receive-response/
 
-public function OFPost(http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers) returns json|error {
-    io:println("call POST " + apiUrl + route);
+// public function OFPost(http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers) returns json|error {
+//     io:println("call POST " + apiUrl + route);
+//     io:println("with body:");
+//     io:println(body);
+//     json response = ();
+//     if (headers != ()) {
+//     response = check apiClient->post(route, body, headers);
+//     } else {
+//         response = check apiClient->post(route, body, headers);
+//     }
+//     io:println("receive response:");
+//     io:println(response);
+//     io:println();
+//     return response;
+// }
+
+public function OFUpdate(string updateMethod, http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers) returns json|error {
+    io:println("call " + updateMethod + " " + apiUrl + route);
     io:println("with body:");
     io:println(body);
     json response = ();
     if (headers != ()) {
-    response = check apiClient->post(route, body, headers);
+        if (updateMethod == "POST") {
+            response = check apiClient->post(route, body, headers);
+        } else if (updateMethod == "PATCH") {
+            response = check apiClient->patch(route, body, headers);
+        }
     } else {
-        response = check apiClient->post(route, body, headers);
+        if (updateMethod == "PATCH") {
+            response = check apiClient->post(route, body);
+        } else if (updateMethod == "PATCH") {
+            response = check apiClient->patch(route, body);
+        }
     }
     io:println("receive response:");
     io:println(response);
     io:println();
     return response;
+}
+
+public function OFPatch (http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers) returns json|error {
+    return OFUpdate("PATCH", apiClient, apiUrl, route, body, headers);
+}
+
+public function OFPost (http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers) returns json|error {
+    return OFUpdate("POST", apiClient, apiUrl, route, body, headers);
 }
 
 public function prGet(string url, anydata response) {
