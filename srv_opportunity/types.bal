@@ -1,4 +1,3 @@
-
 //examples:
 // {"customerId":"1787432","opportunityId":"164","createdAt":null,"updatedAt":"2024-04-16T14:47:36+02:00","deletedAt":null,"id":"511"}
 type OpportunityResponse record {
@@ -69,4 +68,12 @@ type JiraWorkLog record {
     float hours;
     string ticket;
     string descr;
+};
+
+type EntityResponse record {
+    Entity[] items;
+};
+
+type Entity record {
+    int id;
 };

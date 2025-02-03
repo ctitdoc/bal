@@ -2,6 +2,7 @@ import ballerina/http;
 import ballerina/io;
 import ballerina/sql;
 import ballerinax/mysql;
+import ballerina/url;
 
 //see https://ballerina.io/learn/by-example/http-client-send-request-receive-response/
 
@@ -21,22 +22,29 @@ import ballerinax/mysql;
 //     return response;
 // }
 
-public function OFUpdate(string updateMethod, http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers) returns json|error {
+public function OFUpdate(string updateMethod, http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers, boolean urlEncodeBody = false) returns json|error {
     io:println("call " + updateMethod + " " + apiUrl + route);
     io:println("with body:");
     io:println(body);
+    string urlEncodedBody="";
+    if (urlEncodeBody) {
+        urlEncodedBody = encodeParams(<map<string>> body);
+        io:println("body urlencoded version:");
+        io:println(urlEncodedBody);
+    }
+    anydata processedBody = urlEncodeBody ? urlEncodedBody : body;
     json response = ();
     if (headers != ()) {
         if (updateMethod == "POST") {
-            response = check apiClient->post(route, body, headers);
+            response = check apiClient->post(route, processedBody, headers);
         } else if (updateMethod == "PATCH") {
-            response = check apiClient->patch(route, body, headers);
+            response = check apiClient->patch(route, processedBody, headers);
         }
     } else {
         if (updateMethod == "PATCH") {
-            response = check apiClient->post(route, body);
+            response = check apiClient->post(route, processedBody);
         } else if (updateMethod == "PATCH") {
-            response = check apiClient->patch(route, body);
+            response = check apiClient->patch(route, processedBody);
         }
     }
     io:println("receive response:");
@@ -45,12 +53,22 @@ public function OFUpdate(string updateMethod, http:Client apiClient, string apiU
     return response;
 }
 
-public function OFPatch (http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers) returns json|error {
-    return OFUpdate("PATCH", apiClient, apiUrl, route, body, headers);
+function encodeParams(map<string> params) returns string {
+    string encodedParams = "";
+    foreach var [key, value] in params.entries() {
+        string encodedKey = checkpanic url:encode(key, "UTF-8");
+        string encodedValue = checkpanic url:encode(value, "UTF-8");
+        encodedParams+= encodedKey + "=" + encodedValue + "&";
+    }
+    return encodedParams;
 }
 
-public function OFPost (http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers) returns json|error {
-    return OFUpdate("POST", apiClient, apiUrl, route, body, headers);
+public function OFPatch(http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers, boolean urlEncodeBody = false) returns json|error {
+    return OFUpdate("PATCH", apiClient, apiUrl, route, body, headers, urlEncodeBody);
+}
+
+public function OFPost(http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers, boolean urlEncodeBody = false) returns json|error {
+    return OFUpdate("POST", apiClient, apiUrl, route, body, headers, urlEncodeBody);
 }
 
 public function prGet(string url, anydata response) {
@@ -61,7 +79,7 @@ public function prGet(string url, anydata response) {
 }
 
 public function getDbClient() returns mysql:Client|sql:Error {
-    final mysql:Client|sql:Error dbClient =  new("localhost","root","root","srv_opportunity",3310);
+    final mysql:Client|sql:Error dbClient = new ("localhost", "root", "root", "srv_opportunity", 3310);
     return dbClient;
 }
 
@@ -78,6 +96,45 @@ isolated function getOpportunities(mysql:Client dbClient) returns SOOpp[] {
     return opportunities;
 }
 
-public  function play (string scenarioId) returns boolean {
-    return scenarios.indexOf(scenarioId) != () || scenarios.indexOf("all") != ();
+public function play(string|SchemedTalk scenarioId, typedesc<anydata> typeDesc = never) returns boolean {
+    if (scenarioId is string) {
+        return scenarios.indexOf(<string>scenarioId) != () || scenarios.indexOf("all") != ();
+    }
+    var value = scenarioId.cloneWithType(typeDesc);
+    match (value) {
+        var x if x is error => {
+            return false;
+        }
+        _ => {
+            return true;
+        }
+    }
+    return false;
+}
+
+public function hasPlayed(SchemedTalk[] schemedTalks, typedesc<anydata> typeDesc = never) returns boolean {
+    SchemedTalk[] result = from SchemedTalk schemedTalk in schemedTalks
+        where typeof schemedTalk === typeDesc
+        select schemedTalk;
+    return (result.length() > 0);
+}
+
+public function buildRoute(GET|POST request) returns string|error {
+    string route = <string>request.route;
+    if (request?.parameters != ()) {
+        route += "?";
+        map<string|int|float|boolean|(string|int|float|boolean)[]> params = check request?.parameters.cloneWithType();
+        foreach string key in params.keys() {
+            if (params[key] is (string|int|float|boolean)[]) {
+                (string|int|float)[] values = check params[key].cloneWithType();
+                foreach var value in values {
+                    route += string `${key}[]=${value}&`;
+                }
+            } else {
+                (string|int|float|boolean) value = <(string|int|float|boolean)>params[key];
+                route += string `${key}=${value}&`;
+            }
+        }
+    }
+    return route;
 }

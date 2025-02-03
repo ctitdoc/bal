@@ -1,0 +1,13 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Example of HTTP POST Request type"
+    },
+    {
+        "type": "POST",
+        "service": "identity",
+        "route": "/auth/providers/sign-in",
+        "parameters": {"total": true},
+        "body": {"id":"000fz039","password":"zJMv[1]b7T","entityId":"107"}
+    }
+]

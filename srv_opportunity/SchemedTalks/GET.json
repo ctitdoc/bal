@@ -1,0 +1,24 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Example of HTTP GET Request type: one need first to authenticate to the OF service, the returned token is then added in the execution of this GET request."
+    },
+    {
+        "type": "AuthProvidersSign_in",
+        "entityId": "107"
+    },
+    {
+        "type": "GET",
+        "service": "identity",
+        "route": "/users",
+        "parameters": {
+            "pointOfSaleIds": [
+                "155"
+            ],
+            "groupTypes": [
+                "3"
+            ],
+            "total": true
+        }
+    }
+]

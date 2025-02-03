@@ -6,6 +6,7 @@ configurable string jsonConfigFile = ?;
 configurable string balDir = ?;
 configurable string[] scenarios = ?;
 //OF = OpenFlex
+configurable string env = ?;
 configurable string OFAuthJson = ?;
 //Jira
 configurable string jiraApiUrl = ?;
@@ -13,8 +14,12 @@ configurable string jiraApiToken = ?;
 configurable string jiraUserName = ?;
 configurable string jiraCsvFilePath = ?;
 
-public function getConf() returns json|io:Error {
-    return io:fileReadJson(projectDir + "/" + jsonConfigFile);
+public function getConf(string? envValue = env) returns json|io:Error {
+    string:RegExp r = re `\[env\]`;
+    return io:fileReadJson(
+        projectDir 
+        + "/" + 
+        r.replace(jsonConfigFile,<string> (envValue == () ? env : envValue)));
 }
 
 type envVar record {

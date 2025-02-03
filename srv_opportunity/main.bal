@@ -1,82 +1,29 @@
-import ballerina/http;
 import ballerina/io;
 
-public function main() returns error? {
-
+public function main(string countryCode = "IT", string schemedTalkUri = "./SchemedTalks/SchemedTalk.json") returns error? {
+    
     io:println("srv opportunity API calls tests");
+    io:println("usage:");
+    io:println("OPENFLEX_TEST_AUTH='{ (\"env\": \"prod\")?, (\"<country_code>\": { \"id\": \"<api_login>\", \"password\": \"<api_password>\" },)+  }' bal run -- <country_code> <schemed_talk_file>?");
+    io:println("env entry in OPENFLEX_TEST_AUTH is between ()? because optional, as openflex env is set by default to preprod, but you can set it to prod in it;");
+    io:println("<country_code> entry is between ()+ bcause there should be at leats one:");
+    io:println("copy/paste it from OPENFLEX_AUTH env variable of the target env, replace login by id, and you're done.");
+    io:println("bal should be executed from the ballerina srv_opportunity root dir (in tests/bal/srv_opportunity)");
+    io:println("schemed_talk_file is optional and default to SchemedTalks/SchemedTalk.json, but one can create others (take this one as an example, or the more simple SchemedTalks/Users.json).");
+    io:println("NB: for multiple runs with the same OPENFLEX_TEST_AUTH, run them like that:");
+    io:println("OPENFLEX_TEST_AUTH='{...}'");
+    io:println("export OPENFLEX_TEST_AUTH");
+    io:println("bal run IT");
+    io:println("bal run FR");
+    io:println("...");
+    io:println();
+    io:println();
+    io:println(string `... executing schemed talk: ${schemedTalkUri} ...`);
 
-    //conf
-    json|io:Error conf = getConf();
-    if (conf is error) {
-        return conf;
-    } else {
-        string sellingUrl = check getContainerEnvVar(conf, "php-fpm", "OPENFLEX_SELLING_URI");
-        io:println(sellingUrl);
-        string authUrl = check getContainerEnvVar(conf, "php-fpm", "OPENFLEX_AUTH_SERVER_URI");
-        io:println(authUrl);
-        string gatewayUrl = check getContainerEnvVar(conf, "php-fpm", "OPENFLEX_GATEWAY_URI");
-        io:println(gatewayUrl);
-        io:println();
-
-        //authent providers
-        json OFCredentials = check getJsonOFAuthCredentials();
-
-        http:Client OFAuthClient = check new (authUrl);
-        string route = "/auth/providers/sign-in";
-
-        json response = check OFPost(OFAuthClient, authUrl, route, OFCredentials, {});
-
-        string token = check response.token;
-        map<string> headers = {"Authorization": "Bearer " + token};
-
-        string? email = "";
-        if (play("salesPerson")) {
-            //get users by point of sale ID
-            UserResponse users = check OFAuthClient->get("/users?pointOfSaleIds[]=155&groupTypes[]=3&total=true", headers);
-            prGet(sellingUrl + "/users?pointOfSaleIds[]=155&groupTypes[]=3&total=true", users);
-            email = users.items[0].email;
-        }
-
-        http:Client OFSellingClient = check new (sellingUrl);
-
-        if (play("createOpp")) {
-            //get car by chassis and create opportunity
-            json jsonOpp = check getJson("Opportunity.json");
-            Opportunity opportunity = check jsonOpp.cloneWithType();
-
-            //see https://ballerina.io/learn/by-example/http-client-send-request-receive-response/
-            VehResponse vehResp = check OFSellingClient->/vehicles/cars(headers, chassis = <string>opportunity?.chassis, total = true);
-            prGet(sellingUrl + "/vehicles/cars?chassis=" + <string>opportunity?.chassis + "&total=true", vehResp);
-            int vehId = vehResp.items[0].id;
-
-            route = "/offers";
-            opportunity.stockCarId = vehId;
-            if (play("salesPerson")) {
-                opportunity.attributedUser = {"email": email};
-            }
-            http:Client OFGatewayClient = check new (gatewayUrl);
-
-            response = check OFPost(OFGatewayClient, gatewayUrl, route, opportunity, headers);
-
-            //adds comment
-            OpportunityResponse ofResponse = check response.cloneWithType();
-
-            route = "/opportunities/" + ofResponse.opportunityId + "/comments";
-            json body = {
-                "comment": "test Franck ajout par API commentaire de l'offre ID " + ofResponse.id
-            };
-
-            response = check OFPost(OFSellingClient, sellingUrl, route, body, headers);
-
-            //get opportunit by ID
-            json opp = check OFSellingClient->/opportunities/[ofResponse.opportunityId](headers, total = true);
-            prGet(sellingUrl + "/opportunities/" + ofResponse.opportunityId + "?total=true", opp);
-            OFOffersResponse offers = check OFSellingClient->/opportunities/[ofResponse.opportunityId]/offers(headers);
-            prGet(sellingUrl + "/opportunities/" + ofResponse.opportunityId + "/offers?total=true", offers);
-            json offer = check OFSellingClient->get(string `/offers?ids[]=${offers.items[0].id}`, headers);
-            prGet(string `${sellingUrl}/offers?ids[]=${offers.items[0].id}`, offer);
-        }
-    }
+    json schemedTalkJson = check io:fileReadJson(schemedTalkUri);
+    SchemedTalk[] schemedTalks = check schemedTalkJson.cloneWithType();
+    
+    json response = check process(schemedTalks, countryCode);
 
     if (play("oppStatus")) {
         var db_srv_opportunity = check getDbClient();
@@ -87,5 +34,4 @@ public function main() returns error? {
     if (play("jira")) {
         check jira();
     }
-
 }

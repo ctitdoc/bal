@@ -1,0 +1,9 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Example of SalesForce API Authetication"
+    },
+    {
+        "type": "SFAuthToken"
+    }
+]

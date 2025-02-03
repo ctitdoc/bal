@@ -1,0 +1,18 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Get point of sale of an FR entity."
+    },
+    {
+        "type": "AuthProvidersSign_in",
+        "entityId": "300"
+    },
+    {
+        "type": "GET",
+        "service": "identity",
+        "route": "/point-of-sales",
+        "parameters": {
+            "total": true
+        }
+    }
+]

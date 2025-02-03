@@ -1,0 +1,14 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Get a Salesforce opportunity by its ID."
+    },
+    {
+        "type": "SFAuthToken"
+    },
+    {
+        "type": "GET",
+        "service": "salesforce",
+        "route": "/services/data/v58.0/sobjects/Opportunity/006Jv00000NG8E6IAL"
+    }
+]

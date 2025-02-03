@@ -4,9 +4,10 @@
             "name": "Ballerina Debug",
             "type": "ballerina",
             "request": "launch",
-            "programArgs": [],
+            "programArgs": ["IT", "./SchemedTalks/work.json"],
             "commandOptions": [],
-            "env": {}
+            "env": {
+            }
         },
         {
             "name": "Ballerina Test",
