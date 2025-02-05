@@ -4,9 +4,11 @@
             "name": "Ballerina Debug",
             "type": "ballerina",
             "request": "launch",
-            "programArgs": ["IT", "./SchemedTalks/work.json"],
+            "programArgs": ["IT", "./SchemedTalks/Empty.json"],
             "commandOptions": [],
             "env": {
+                                "OPENFLEX_TEST_AUTH":"{ \"FR\": { \"id\": \"000fq119\", \"password\": \"z04vWHpVAnF#PU\" }, \"IT\": { \"id\": \"000fz039\", \"password\": \"zJMv[1]b7T\" } }",
+                "SALESFORCE_TEST_AUTH":"{ \"username\": \"integration-it.api@bymycar.fr.bmc\", \"password\": \"3Cmw584!Z%o7Pn6p1SS6CFsXyPLAc768KEsgoYhty\",\"client_id\": \"3MVG9HxRZv05HarSsYD8CKbYYBLQQ.GiMz1Q10rYFvrCU2lwInQ8oKZh0ETehvcHme1pGPfbmXHobG6A3YHbe\", \"client_secret\": \"EC4250DA35547ED5033D802C24963DB047A8379004823DB792FB912BCBBD5670\", \"grant_type\": \"password\" }"
             }
         },
         {

@@ -1,0 +1,22 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Get get vehicle by chassis of an FR POS."
+    },
+    {
+        "type": "AuthProvidersSign_in",
+        "entityId": "300"
+    },
+    {
+        "type": "GET",
+        "service": "selling",
+        "route": "/vehicles/cars",
+        "parameters": {
+            "total": true,
+            "pointOfSaleIds": [
+                "454"
+            ],
+            "chassis": "WVGZZZ5NZCW571130"
+        }
+    }
+]

@@ -113,4 +113,8 @@ type SFAuthToken record  {
     "SFAuthToken" 'type = "SFAuthToken";
     "/services/oauth2/token" route = "/services/oauth2/token";
     string description = "Request type SFAuthToken executes salesforce POST endpoint /services/oauth2/token";
+    string username?;
+    string password?;
+    string client_id?;
+    string client_secret?;
 };
