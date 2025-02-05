@@ -3,7 +3,7 @@ import ballerina/http;
 import ballerina/io;
 import ballerina/os;
 
-public function process (SchemedTalk[] schemedTalks, string countryCode, boolean checkUserAuth = false) returns json|error? {
+public function process(SchemedTalk[] schemedTalks, string countryCode, boolean checkUserAuth = false) returns json|error? {
 
     //conf
     map<string|map<string>>|error & readonly ofAuths = jsondata:parseString(os:getEnv("OPENFLEX_TEST_AUTH"), {});
@@ -89,7 +89,9 @@ public function process (SchemedTalk[] schemedTalks, string countryCode, boolean
         } else if (play(schemedTalk, ProvidersEntities)) {
             ProvidersEntities providerEntities = check schemedTalk.cloneWithType();
             schemedTalk.description = providerEntities.description;
-            if checkUserAuth { OFCredentials = {"id": <string> (providerEntities.id != () ? providerEntities.id : ""), "password": <string> (providerEntities.password != () ? providerEntities.password : "")}; }
+            if checkUserAuth {
+                OFCredentials = {"id": <string>(providerEntities.id != () ? providerEntities.id : ""), "password": <string>(providerEntities.password != () ? providerEntities.password : "")};
+            }
             io:println("-----");
             io:println(providerEntities.description);
             io:println("-----");
@@ -98,7 +100,9 @@ public function process (SchemedTalk[] schemedTalks, string countryCode, boolean
         } else if (play(schemedTalk, AuthProvidersSign_in)) {
             AuthProvidersSign_in authProvidersSign_in = check schemedTalk.cloneWithType();
             schemedTalk.description = authProvidersSign_in.description;
-            if checkUserAuth { OFCredentials = {"id": <string> (authProvidersSign_in.id != () ? authProvidersSign_in.id : ""), "password": <string> (authProvidersSign_in.password != () ? authProvidersSign_in.password : "")}; }
+            if checkUserAuth {
+                OFCredentials = {"id": <string>(authProvidersSign_in.id != () ? authProvidersSign_in.id : ""), "password": <string>(authProvidersSign_in.password != () ? authProvidersSign_in.password : "")};
+            }
             OFCredentials["entityId"] = authProvidersSign_in.entityId;
             io:println("-----");
             io:println(authProvidersSign_in.description);
@@ -187,12 +191,21 @@ public function process (SchemedTalk[] schemedTalks, string countryCode, boolean
             io:println("-----");
             io:println(sfAuthToken.description);
             io:println("-----");
-            response = check OFPost(SFClient, salesforceUrl, sfAuthToken.route, check SFCredentials, {"Content-Type":"application/x-www-form-urlencoded"}, true);
+            if checkUserAuth {
+                SFCredentials = {
+                    "username": <string>(sfAuthToken.username != () ? sfAuthToken.username : ""),
+                    "password": <string>(sfAuthToken.password != () ? sfAuthToken.password : ""),
+                    "client_id": <string>(sfAuthToken.client_id != () ? sfAuthToken.client_id : ""),
+                    "client_secret": <string>(sfAuthToken.client_secret != () ? sfAuthToken.client_secret : ""),
+                    "grant_type": "password"
+                };
+            }
+            response = check OFPost(SFClient, salesforceUrl, sfAuthToken.route, check SFCredentials, {"Content-Type": "application/x-www-form-urlencoded"}, true);
             string token = check response.access_token;
             sfHeaders = {"Authorization": "Bearer " + token};
             played.push(sfAuthToken);
         }
-        if ( ! play(schemedTalk, SchemedTalkDoc) ) {
+        if (!play(schemedTalk, SchemedTalkDoc)) {
             responses.push((schemedTalk.description != ()) ? {"description": schemedTalk.description} : {"description": ""});
         }
         responses.push(response);
