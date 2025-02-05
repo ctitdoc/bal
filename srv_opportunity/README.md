@@ -43,6 +43,8 @@ Ce module est executable en CLI ou via un swagger openapi.
 
 <<<<
 
+NB: ces credentials sont dispos dans bitwarden: OF: "API openflex <env> <country_code>" , SF: "Salesforce <env>" (pas d'API PREPROD SF dispo à date)...
+
 Cette commande fait deux choses:
 
 * elle execute le "schmed talk" vide, qui n'exécute donc aucune request... mais si on le remplace par un qui en contient => cette commande les exécute : mode d'exécution CLI;
@@ -337,4 +339,3 @@ Pour OF:
 
 NB: ces credentials sont dispos dans bitwarden: OF: "API openflex <env> <country_code>" , SF: "Salesforce <env>" (pas d'API PREPROD SF dispo à date)...  
 NB: l'autre endpoint: /schemed_talk_responses retourne les réponses de la dernière exécution de /schemed_talk: il ne sert que dans les environnement avec un timeout configuré trop court par rapport au délais d'exécution du schemed_talk.
-
