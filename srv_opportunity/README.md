@@ -131,7 +131,7 @@ To Be Completed ...
 
 
   
-        2. dézipper là oû on veut l'archive swagger-ui : tools/swagger-ui-<version>.zip,
+        2. dézipper là oû on veut l'archive [swagger-ui](https://github.com/swagger-api/swagger-ui) : tools/swagger-ui-<version>.zip,
 
 
 
@@ -202,5 +202,6 @@ Pour OF:
 <<<<
 
 NB: l'autre endpoint: /schemed_talk_responses retourne les réponses de la dernière exécution de /schemed_talk: il ne sert que dans les environnement avec un timeout configuré trop court par rapport au délais d'exécution du schemed_talk.
+
 
 
