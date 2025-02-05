@@ -1,8 +1,9 @@
 import ballerina/http;
 import ballerina/io;
+import ballerina/lang.regexp;
 import ballerina/sql;
-import ballerinax/mysql;
 import ballerina/url;
+import ballerinax/mysql;
 
 //see https://ballerina.io/learn/by-example/http-client-send-request-receive-response/
 
@@ -26,9 +27,9 @@ public function OFUpdate(string updateMethod, http:Client apiClient, string apiU
     io:println("call " + updateMethod + " " + apiUrl + route);
     io:println("with body:");
     io:println(body);
-    string urlEncodedBody="";
+    string urlEncodedBody = "";
     if (urlEncodeBody) {
-        urlEncodedBody = encodeParams(<map<string>> body);
+        urlEncodedBody = encodeParams(<map<string>>body);
         io:println("body urlencoded version:");
         io:println(urlEncodedBody);
     }
@@ -58,7 +59,7 @@ function encodeParams(map<string> params) returns string {
     foreach var [key, value] in params.entries() {
         string encodedKey = checkpanic url:encode(key, "UTF-8");
         string encodedValue = checkpanic url:encode(value, "UTF-8");
-        encodedParams+= encodedKey + "=" + encodedValue + "&";
+        encodedParams += encodedKey + "=" + encodedValue + "&";
     }
     return encodedParams;
 }
@@ -137,4 +138,30 @@ public function buildRoute(GET|POST request) returns string|error {
         }
     }
     return route;
+}
+
+function extractIP(string headerValue, string fallbackValue) returns string {
+    regexp:RegExp ipPattern = re `\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b`;
+    regexp:Span? span = ipPattern.find(headerValue);
+    return span is () ? fallbackValue : span.substring();
+}
+
+function getRequestEmitterIP(http:Request request) returns string {
+    string requestEmitterIP = "localhost";
+    string|error headerValue = "";
+    if (request.hasHeader("Forwarded")) {
+        headerValue = request.getHeader("X-Forwarded");
+    } else if (request.hasHeader("X-Forwarded-For")) {
+        headerValue = request.getHeader("X-Forwarded-For");
+    } else if (request.hasHeader("X-Real-IP")) {
+        headerValue = request.getHeader("X-Real-IP");
+    }
+    match headerValue {
+        var e if e is error => {
+        }
+        _ => {
+            requestEmitterIP = extractIP(<string>headerValue, "localhost");
+        }
+    }
+    return requestEmitterIP;
 }

@@ -1,7 +1,6 @@
 import ballerina/http;
 import ballerina/io;
 
-
 // A `ResponseErrorInterceptor` service class implementation.
 service class ResponseErrorInterceptor {
     *http:ResponseErrorInterceptor;
@@ -39,22 +38,51 @@ service http:Service / on new http:Listener(port) {
         return new ResponseErrorInterceptor();
     }
 
-
     function init() {
         io:println(string `listening for schemed talk on port ${port}...`);
         io:println();
     }
-    resource function post schemed_talks(SchemedTalk[] schemedTalks) returns json|http:BadRequest {
+
+    resource function post schemed_talks(http:Request request, SchemedTalk[] schemedTalks) returns json|http:BadRequest {
         json|error response = process(schemedTalks, "IT", true);
+
+        string requestEmitterIP = getRequestEmitterIP(request);
+
         match response {
-            var e if e is error => { return http:BAD_REQUEST; }
-            _  => { return response;}
+            var e if e is error => {
+                error|() e1 = io:fileWriteJson(string `./responses/${requestEmitterIP}.json`, [e.message()]);
+                return http:BAD_REQUEST;
+            }
+            var foo if foo is json => {
+                error|() e = io:fileWriteJson(string `./responses/${requestEmitterIP}.json`, foo);
+                return response;
+            }
         }
     }
 
+    resource function post schemed_talks_responses(http:Request request) returns json {
+        string requestEmitterIP = getRequestEmitterIP(request);
+        json|error content = io:fileReadJson(string `./responses/${requestEmitterIP}.json`);
+        match content {
+            var e if e is error => {
+                return "No response found.";
+            }
+            var foo if foo is json => {
+                return content;
+            }
+            _ => {
+                return "Error while retrieving responses";
+            }
+        }
+    }
     resource function get openapi() returns string|error {
         io:println(string `return openapi contract...`);
         return check io:fileReadString("./schemed_talk_service_openapi.yaml");
+    }
+
+    resource function get openapi_dev() returns string|error {
+        io:println(string `return openapi dev contract...`);
+        return check io:fileReadString("./schemed_talk_service_openapi_dev.yaml");
     }
 
 }
