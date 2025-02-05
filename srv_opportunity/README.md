@@ -201,7 +201,7 @@ Pour OF:
 
 <<<<
 
+NB: ces credentials sont dispos dans bitwarden: OF: "API openflex <env> <country_code>" , SF: "Salesforce <env>" (pas d'API PREPROD SF dispo à date)...  
 NB: l'autre endpoint: /schemed_talk_responses retourne les réponses de la dernière exécution de /schemed_talk: il ne sert que dans les environnement avec un timeout configuré trop court par rapport au délais d'exécution du schemed_talk.
-
 
 
