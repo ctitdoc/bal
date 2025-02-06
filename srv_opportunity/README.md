@@ -107,7 +107,7 @@ Cette commande fait deux choses:
     SALESFORCE_TEST_AUTH='{ "username": "<login_api_SF>", "password": "<password_api_SF>","client_id": "<client_id_api_SF>", "client_secret": "<client_secret_api_SF>", "grant_type": "password" }'
     export OPENFLEX_TEST_AUTH
     export SALESFORCE_TEST_AUTH
-    bal run target/bin/-- IT ./SchemedTalks/Empty.json
+    bal run target/bin/srv_opportunity.jar -- IT ./SchemedTalks/Empty.json
 
 <<<<
 
@@ -339,3 +339,4 @@ Pour OF:
 
 NB: ces credentials sont dispos dans bitwarden: OF: "API openflex <env> <country_code>" , SF: "Salesforce <env>" (pas d'API PREPROD SF dispo à date)...  
 NB: l'autre endpoint: /schemed_talk_responses retourne les réponses de la dernière exécution de /schemed_talk: il ne sert que dans les environnement avec un timeout configuré trop court par rapport au délais d'exécution du schemed_talk.
+
