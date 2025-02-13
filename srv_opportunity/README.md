@@ -328,7 +328,7 @@ Pour OF:
     Pour SalesForce:
     
      {
-     "type": "SFAuthToken",
+     "type": "SFAuth2Token",
      "username": "XXXX",
      "password": "XXXX",
      "client_id": "XXXX",
