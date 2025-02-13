@@ -1,0 +1,16 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Checks SF limits, for exemple to check if the max number of api request fixed by contract has been reached..."
+    },
+    {
+        "type": "SFAuth2Token"
+    },
+    {
+        "type": "GET",
+        "service": "salesforce",
+        "route": "/services/data/v58.0/limits"
+    }
+]
+
+

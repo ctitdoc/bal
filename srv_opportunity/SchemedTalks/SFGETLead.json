@@ -1,0 +1,15 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Get a Salesforce opportunity by its ID: may make an error maybe because of api permissions on the Lead object..."
+    },
+    {
+        "type": "SFAuth2Token"
+    },
+    {
+        "type": "GET",
+        "service": "salesforce",
+        "route": "/services/data/v58.0/sobjects/Lead/00QJv00000NqXU5MAN"
+    }
+
+]

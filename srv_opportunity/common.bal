@@ -54,6 +54,53 @@ public function OFUpdate(string updateMethod, http:Client apiClient, string apiU
     return response;
 }
 
+function resolveExpressions(string jsonString, json response, map<json> memory = {}) returns SchemedTalk|error {
+
+    string:RegExp regex = re `<\?([:\w]+)\?>`;
+    if !(response is map<json>) {
+        SchemedTalk resolvedSchemedTalk = check (<anydata>(check jsonString.fromJsonString())).cloneWithType();
+        return resolvedSchemedTalk;
+    }
+    //see https://github.com/ballerina-platform/ballerina-lang/issues/42331
+    // about isolation, readonlyness and finalness...
+    final map<json> & readonly work = response.cloneReadOnly();
+    final map<json> & readonly mem = memory.cloneReadOnly();
+
+    regexp:Replacement replaceFunction = isolated function(regexp:Groups groups) returns string {
+        regexp:Span? span = groups[1];
+        if (span == ()) {
+            return "";
+        }
+        string key = span.substring();
+        string:RegExp memoryPattern = re `memory:(\w+)`;
+        json? value = ();
+        if memoryPattern.matchAt(key, 0) is regexp:Span {
+            regexp:Groups? memoryGroup = memoryPattern.findGroups(key);
+            if memoryGroup is () {return "<?" + key + "?>";}
+            regexp:Span? memorySpan = memoryGroup[1];
+            if memorySpan is () {return "<?" + key + "?>";}
+            key = memorySpan.substring();
+            value = mem[key];
+            if value is string {
+                return value;
+            } else {
+                return "<?" + key + "?>";
+            }
+        } else {
+            value = work[key];
+            if value is string {
+                return value;
+            } else {
+                return "<?" + key + "?>";
+            }
+        }
+    };
+
+    string result = regex.replace(jsonString, replaceFunction);
+    SchemedTalk resolvedSchemedTalk = check (<anydata>(check result.fromJsonString())).cloneWithType();
+    return resolvedSchemedTalk;
+}
+
 function encodeParams(map<string> params) returns string {
     string encodedParams = "";
     foreach var [key, value] in params.entries() {
@@ -113,14 +160,14 @@ public function play(string|SchemedTalk scenarioId, typedesc<anydata> typeDesc =
     return false;
 }
 
-public function hasPlayed(SchemedTalk[] schemedTalks, typedesc<anydata> typeDesc = never) returns boolean {
-    SchemedTalk[] result = from SchemedTalk schemedTalk in schemedTalks
+public function hasPlayed((SchemedTalk|map<json>)[] schemedTalks, typedesc<anydata> typeDesc = never) returns boolean {
+    (SchemedTalk|map<json>)[] result = from (SchemedTalk|map<json>) schemedTalk in schemedTalks
         where typeof schemedTalk === typeDesc
         select schemedTalk;
     return (result.length() > 0);
 }
 
-public function buildRoute(GET|POST request) returns string|error {
+public function buildRoute(GET|POST|PATCH request) returns string|error {
     string route = <string>request.route;
     if (request?.parameters != ()) {
         route += "?";

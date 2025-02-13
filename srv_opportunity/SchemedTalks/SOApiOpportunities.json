@@ -1,0 +1,64 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Sends an SF opportunity to OF via the SO api endpoint."
+    },
+    {
+        "type": "SOApiLoginCheck"
+    },
+    {
+        "type": "SOApiOpportunities",
+        "body": {
+            "salesforceOpportunityId": "112",
+            "salesforceClientId": "154152",
+            "chassis": "75287287575757575",
+            "customer": {
+              "type": 1,
+              "civility": 2,
+              "name": "Doe",
+              "firstname": "John",
+              "address1": "351 avenue des massettes",
+              "zipCode": "73000",
+              "city": "Challes-Les-Eaux",
+              "countryIso": "IT",
+              "countryValue": "ITALIE",
+              "cellphone": "0601020304",
+              "email": "j.doe@test.fr",
+              "marketingConsent": true,
+              "thirdConsent": false,
+              "isOptinCall": true,
+              "isOptinLetter": true,
+              "isOptinSms": true
+            },
+            "offer": {
+              "marketingChannel": "Email",
+              "marketingSource": "Brevo",
+              "pointOfSaleName": "BMW Milano",
+              "leadSource": "Site Web Bymycar",
+              "pointOfSaleId": 155,
+              "pointOfSaleCountryIsoCode": "IT",
+              "sellerName": "BMW Milano",
+              "sellerId": "1234",
+              "comment": "test"
+            },
+            "attributedUser": {
+              "email": "gbendini@terranovaws.it"
+            },
+            "originalTrackOwner": "bmc"
+          }
+    },
+    {
+        "type": "Memorize",
+        "asWhat": {
+            "openflexOpportunityId": "openflexOpportunityId"
+        }
+    },
+    {
+        "type": "GET",
+        "service": "srv_opportunity",
+        "route":"/api/sales_persons",
+        "parameters": {
+            "pointOfSaleId[]":"<?memory:openflexOpportunityId?>"
+        }
+    }
+]

@@ -1,0 +1,16 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Get all Salesforce objects (= all objects one can use by SF APIs."
+    },
+    {
+        "type": "SFAuth2Token"
+    },
+    {
+        "type": "GET",
+        "service": "salesforce",
+        "route": "/services/data/v58.0/sobjects/"
+    }
+]
+
+

@@ -4,11 +4,11 @@
         "description": "Get a Salesforce opportunity by its ID."
     },
     {
-        "type": "SFAuthToken"
+        "type": "SFAuth2Token"
     },
     {
         "type": "GET",
         "service": "salesforce",
-        "route": "/services/data/v58.0/sobjects/Opportunity/006Jv00000NG8E6IAL"
+        "route": "/services/data/v58.0/sobjects/Opportunity/006Jv00000O6ptGIAR"
     }
 ]

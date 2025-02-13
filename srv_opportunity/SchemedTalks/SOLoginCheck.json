@@ -1,0 +1,9 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Service Opportunity (SO) API Authetication."
+    },
+    {
+        "type": "SOApiLoginCheck"
+    }
+]

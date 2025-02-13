@@ -1,0 +1,16 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Get a Salesforce object by a SOQL query."
+    },
+    {
+        "type": "SFAuth2Token"
+    },
+    {
+        "type": "GET",
+        "service": "salesforce",
+        "route1": "/services/data/v58.0/query/?q=SELECT+Id,EventType,CreatedDate,LogFile+FROM+EventLogFile+WHERE+EventType='API'",
+        "route2": "/services/data/v58.0/query/?q=SELECT+Id,LogLength,LogUserId,StartTime+FROM+ApexLog+ORDER+BY+StartTime+DESC",
+        "route": "/services/data/v58.0/query/?q=SELECT+FIELDS(ALL)+FROM+Opportunity+WHERE+Id='006Jv00000O6ptGIAR'"
+    }
+]

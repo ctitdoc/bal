@@ -1,0 +1,14 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Get a SF RecordType by its ID."
+    },
+    {
+        "type": "SFAuth2Token"
+    },
+    {
+        "type": "GET",
+        "service": "salesforce",
+        "route": "/services/data/v58.0/sobjects/RecordType/0121v000000Rg4yAAC"
+    }
+]

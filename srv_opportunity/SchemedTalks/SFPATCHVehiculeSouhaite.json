@@ -1,0 +1,17 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Adds a vehicle to an SF Opportunity."
+    },
+    {
+        "type": "SFAuth2Token"
+    },
+    {
+        "type": "PATCH",
+        "service": "salesforce",
+        "route": "/services/data/v58.0/sobjects/VehiculeSouhaite__c/a1pJv000003byjRIAQ",
+        "body":   {
+            "Opportunite__c": "006Jv00000O5SsIIAV"
+          }
+    }
+]

@@ -1,0 +1,14 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Definition of SF Opportunity object"
+    },
+    {
+        "type": "SFAuth2Token"
+    },
+    {
+        "type": "GET",
+        "service": "salesforce",
+        "route": "/services/data/v58.0/sobjects/Opportunity/describe"
+    }
+]

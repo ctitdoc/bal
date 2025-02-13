@@ -10,11 +10,11 @@ public type SchemedTalkDoc record {
     string description;
 };
 
-public enum OFService {identity, selling, gateway, salesforce};
+public enum ManagedService {identity, selling, gateway, salesforce, srv_opportunity};
 
 type RequestType record {
     *SchemedTalk;
-    OFService 'service;
+    ManagedService 'service;
     string 'type = "Request";
     string route?;
 };
@@ -44,15 +44,21 @@ type POST record {
     string description = "Request type POST executes an openflex or salesforce HTTP POST request: property service identifies one of the following OF/SF services: identity, selling, gateway, salesforce; route is the URI of the http request, parameters and body properties are the http parameters and body of the request";
 };
 
+type PATCH record {
+    *POSTRequestType;
+    "PATCH" 'type = "PATCH";
+    string description = "Request type PATCH executes an openflex or salesforce HTTP PATCH request: property service identifies one of the following OF/SF services: identity, selling, gateway, salesforce; route is the URI of the http request, parameters and body properties are the http parameters and body of the request";
+};
+
 type ManagedPostRequestType record {
     *POSTRequestType;
-    OFService 'service?;
+    ManagedService 'service?;
     string description = "";
 };
 
 type ManagedGetRequestType record {
     *GETRequestType;
-    OFService 'service?;
+    ManagedService 'service?;
     string description = "";
 };
 
@@ -60,7 +66,7 @@ type ProvidersEntities record  {
     // fix me: if one replace RequestType by ManagedPostRequestType then {"type": "ProvidersEntities"} 
     // is no more recognized as this record type like the other manged post request : AuthProvidersSign_in, CreateOpportunity... why ?
     *ManagedPostRequestType;
-    OFService 'service?;
+    ManagedService 'service?;
     "ProvidersEntities" 'type = "ProvidersEntities";
     "/providers/entities" route = "/providers/entities";
     string description = "Request type ProvidersEntities executes openflex POST endpoint /providers/entities";
@@ -70,7 +76,7 @@ type ProvidersEntities record  {
 
 type AuthProvidersSign_in record  {
     *ManagedPostRequestType;
-    OFService 'service?;
+    ManagedService 'service?;
     "AuthProvidersSign_in" 'type = "AuthProvidersSign_in";
     "/auth/providers/sign-in" route = "/auth/providers/sign-in";
     string entityId;
@@ -105,16 +111,40 @@ type CreateOpportunity record {
     string description = "Schemed talk CreateOpportunity creates an openflex opportunity from its 'opportunity' property (having service opportunity's json format), via the follwing talk scheme: if the SF opportunity has a chassis : executes GET /vehicles/cars?chassis=<chassis> to get the vehicle id and set it in the opportunity json; executes POST /offers with this json; from the reponse with the created OF opportunity ID, executes /opportunities/<OPPORTUNITY_ID>/comments to add the SF opportunity comment to the OF opportunity; then for check purpose : executes /opportunities/<OPPORTUNITY_ID> to check (visually) the content of the created opportunity, then /opportunities/<OPPORTUNITY_ID>/offers to get the ID of the created offer (the last of the returned offer list), then /offers?ids[]=<OFFER_ID> to check (visually) its content";
 };
 
-type SFAuthToken record  {
-    // fix me: if one replace RequestType by ManagedPostRequestType then {"type": "ProvidersEntities"} 
-    // is no more recognized as this record type like the other manged post request : AuthProvidersSign_in, CreateOpportunity... why ?
+type SFAuth2Token record  {
     *ManagedPostRequestType;
-    OFService 'service?;
-    "SFAuthToken" 'type = "SFAuthToken";
+    salesforce 'service = salesforce;
+    "SFAuth2Token" 'type = "SFAuth2Token";
     "/services/oauth2/token" route = "/services/oauth2/token";
-    string description = "Request type SFAuthToken executes salesforce POST endpoint /services/oauth2/token";
+    string description = "Request type SFAuth2Token executes salesforce POST endpoint /services/oauth2/token";
     string username?;
     string password?;
     string client_id?;
     string client_secret?;
+};
+
+type SOApiLoginCheck record {
+    *ManagedPostRequestType;
+    srv_opportunity 'service = srv_opportunity;
+    "SOApiLoginCheck" 'type = "SOApiLoginCheck";
+    "/api/login_check" route = "/api/login_check";
+    string description = "Request type LoginCheck executes service opportunity POST endpoint /api/login_check";
+    string username?;
+    string password?;
+};
+
+type SOApiOpportunities record {
+    *ManagedPostRequestType;
+    srv_opportunity 'service = srv_opportunity;
+    "SOApiOpportunities" 'type = "SOApiOpportunities";
+    "/api/opportunities" route = "/api/opportunities";
+    string description = "Request type SOApiOpportunities executes service opportunity POST endpoint /api/opportunities";
+    map<json> body;
+};
+
+type Memorize record {
+    *SchemedTalk;
+    "Memorize" 'type = "Memorize";
+    string description = "Memorize a json value of the last response: the asWhat map property specifies: as the key : the name under which the value is memorized, and as the key value: either the name of the key referencing the value if the reponse is a map, or the index of the value if the response is an array.";
+    map<string|int> asWhat;
 };
