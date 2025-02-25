@@ -9,7 +9,10 @@
     {
         "type": "GET",
         "service": "salesforce",
-        "route": "/services/data/v58.0/sobjects/Lead/00QJv00000NqXU5MAN"
+        "route": "/services/data/v58.0/sobjects/Lead/00QAP00000IrcG52AJ",
+        "routeTest2": "/services/data/v58.0/sobjects/Lead/00QAP00000IrlKz2AJ",
+        "routeLeadQuery": "/services/data/v58.0/query/?q=SELECT+Id,FirstName,LastName,CreatedDate+FROM+Lead+ORDER+BY+CreatedDate+DESC+LIMIT+10",
+        "routeProd": "/services/data/v58.0/sobjects/Lead/00QJv00000NqXU5MAN"
     }
 
 ]

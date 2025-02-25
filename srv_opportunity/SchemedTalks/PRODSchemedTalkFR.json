@@ -1,0 +1,54 @@
+[
+  {
+    "type": "SchemedTalkDoc",
+    "description": "This schemed talk test all the the endpoints currently integrated in opportunity service, in a sequence compliant with the sequence executed by this service. The CreateOpportunity talk calls the sequence of endpoints currently executed by opportunity service to create an openflex opportunity from a SalesForce opportunity; this whole sequence is not configured as a schemd talk yet (all endpoints are 'hard called' in the code), but will become a schemed talk in a next version."
+  },
+  {
+    "type": "ProvidersEntities"
+  },
+  {
+    "type": "AuthProvidersSign_in",
+    "entityId": "1647"
+  },
+  {
+    "type": "CreateOpportunity",
+    "opportunity": {
+      "salesforceOpportunityId": "006Jv00000OIwFpIAL",
+      "salesforceClientId": "154152",
+      "chassis": "WBA41GV050CU31512",
+      "customer": {
+        "type": 1,
+        "civility": 2,
+        "name": "TestFranck",
+        "firstname": "FranckTest",
+        "address1": "351 avenue des massettes",
+        "zipCode": "73000",
+        "city": "Challes-Les-Eaux",
+        "countryIso": "FR",
+        "countryValue": "FRANCE",
+        "cellphone": "0601020304",
+        "email": "franck.delahaye@bee2link.fr",
+        "marketingConsent": true,
+        "thirdConsent": false,
+        "isOptinCall": true,
+        "isOptinLetter": true,
+        "isOptinSms": true
+      },
+      "offer": {
+        "marketingChannel": "Email",
+        "marketingSource": "Brevo",
+        "pointOfSaleName": "BMW Milano",
+        "leadSource": "Site Web Bymycar",
+        "pointOfSaleId": 2299,
+        "pointOfSaleCountryIsoCode": "FR",
+        "sellerName": "BMW Milano",
+        "sellerId": "1234",
+        "comment": "test"
+      },
+      "attributedUser": {
+        "email": "m.caillot@bymycar.fr"
+      },
+      "originalTrackOwner": "bmc"
+    }
+  }
+]

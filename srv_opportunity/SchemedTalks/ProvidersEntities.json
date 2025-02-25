@@ -1,0 +1,9 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Authenticates as providers and returns its entities."
+    },
+    {
+        "type": "ProvidersEntities"
+    }
+]

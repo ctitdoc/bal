@@ -1,29 +1,29 @@
 [
     {
         "type": "SchemedTalkDoc",
-        "description": "Sends an SF opportunity to OF via the SO api endpoint."
+        "description": "Creates an OF FR opportunity in the PREPROD point of sale."
     },
     {
-        "type": "SOApiLoginCheck"
+        "type": "AuthProvidersSign_in",
+        "entityId": "300"
     },
     {
-        "type": "SOApiOpportunities",
-        "body": {
+        "type": "CreateOpportunity",
+        "opportunity": {
             "salesforceOpportunityId": "112",
             "salesforceClientId": "154152",
-            "chassis": "75287287575757575",
             "customer": {
               "type": 1,
               "civility": 2,
-              "name": "Doe",
-              "firstname": "John",
+              "name": "FranckTest",
+              "firstname": "Franck",
               "address1": "351 avenue des massettes",
               "zipCode": "73000",
               "city": "Challes-Les-Eaux",
-              "countryIso": "IT",
-              "countryValue": "ITALIE",
+              "countryIso": "FR",
+              "countryValue": "FRANCE",
               "cellphone": "0601020304",
-              "email": "j.doe@test.fr",
+              "email": "franck.delahaye@bee2link.fr",
               "marketingConsent": true,
               "thirdConsent": false,
               "isOptinCall": true,
@@ -33,18 +33,14 @@
             "offer": {
               "marketingChannel": "Email",
               "marketingSource": "Brevo",
-              "pointOfSaleName": "BMW Milano",
+              "pointOfSaleName": "BYmyCAR Occasions",
               "leadSource": "Site Web Bymycar",
-              "pointOfSaleId": 155,
-              "pointOfSaleCountryIsoCode": "IT",
-              "sellerName": "BMW Milano",
+              "pointOfSaleId": 459,
+              "sellerName": "BYmyCAR Occasions",
               "sellerId": "1234",
-              "comment": "test"
-            },
-            "attributedUser": {
-              "email": "gbendini@terranovaws.it"
+              "comment": "test informatique. Veuillez ignorer cette offre."
             },
             "originalTrackOwner": "bmc"
-          }
+        }
     }
 ]

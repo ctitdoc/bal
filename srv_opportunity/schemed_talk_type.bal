@@ -76,7 +76,7 @@ type ProvidersEntities record  {
 
 type AuthProvidersSign_in record  {
     *ManagedPostRequestType;
-    ManagedService 'service?;
+    identity 'service = identity;
     "AuthProvidersSign_in" 'type = "AuthProvidersSign_in";
     "/auth/providers/sign-in" route = "/auth/providers/sign-in";
     string entityId;

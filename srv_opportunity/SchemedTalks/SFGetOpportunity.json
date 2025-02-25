@@ -9,6 +9,6 @@
     {
         "type": "GET",
         "service": "salesforce",
-        "route": "/services/data/v58.0/sobjects/Opportunity/006Jv00000O6ptGIAR"
+        "route": "/services/data/v58.0/sobjects/Opportunity/006Jv00000OIwFpIAL"
     }
 ]

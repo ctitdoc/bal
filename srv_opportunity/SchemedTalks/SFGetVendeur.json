@@ -1,7 +1,7 @@
 [
     {
         "type": "SchemedTalkDoc",
-        "description": "Get a Salesforce opportunity by its ID."
+        "description": "Get a Salesforce seller by its ID."
     },
     {
         "type": "SFAuth2Token"

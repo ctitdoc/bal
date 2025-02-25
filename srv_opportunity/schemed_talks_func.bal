@@ -130,6 +130,9 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
             response = check OFPost(OFAuthClient, authUrl, authProvidersSign_in.route, OFCredentials, {});
             string token = check response.token;
             headers = {"Authorization": "Bearer " + token};
+            httpClients[authProvidersSign_in.'service]["headers"] = headers;
+            httpClients[selling]["headers"] = headers;
+            httpClients[gateway]["headers"] = headers;
             played.push(authProvidersSign_in);
         } else if (play(resolvedSchemedTalk, AuthProvidersPassword)) {
             AuthProvidersPassword authProvidersPassword = check resolvedSchemedTalk.cloneWithType();

@@ -1,0 +1,50 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Sends an SF opportunity to OF via the SO api endpoint."
+    },
+    {
+        "type": "SOApiLoginCheck"
+    },
+    {
+        "type": "SOApiOpportunities",
+        "body": {
+            "salesforceOpportunityId": "<?memory:salesforceOpportunityId?>",
+            "salesforceClientId": "154152",
+            "chassis": "WBACR61010LJ22513",
+            "customer": {
+                "type": 1,
+                "civility": 2,
+                "name": "TestFranck",
+                "firstname": "FranckTest",
+                "address1": "351 avenue des massettes",
+                "zipCode": "73000",
+                "city": "Challes-Les-Eaux",
+                "countryIso": "FR",
+                "countryValue": "FRANCE",
+                "cellphone": "0601020304",
+                "email": "franck.delahaye@bee2link.fr",
+                "marketingConsent": true,
+                "thirdConsent": false,
+                "isOptinCall": true,
+                "isOptinLetter": true,
+                "isOptinSms": true
+            },
+            "offer": {
+                "marketingChannel": "Email",
+                "marketingSource": "Brevo",
+                "pointOfSaleName": "BMW Milano",
+                "leadSource": "Site Web Bymycar",
+                "pointOfSaleId": 2292,
+                "pointOfSaleCountryIsoCode": "FR",
+                "sellerName": "BMW Milano",
+                "sellerId": "1234",
+                "comment": "test"
+            },
+            "attributedUser": {
+                "email": "m.caillot@bymycar.fr"
+            },
+            "originalTrackOwner": "bmc"
+        }
+    }
+]
