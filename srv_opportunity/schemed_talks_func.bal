@@ -24,7 +24,10 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
             conf = check getConf(<string?>auths["env"]);
         }
     }
-    json sfConf = check getConf("prod");
+
+
+
+    json sfConf = check getConf(<string?>auths["env"]);
 
     string sellingUrl = check getContainerEnvVar(conf, "php-fpm", "OPENFLEX_SELLING_URI");
     io:println(sellingUrl);
@@ -88,6 +91,17 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
                     <http:Client>httpClients[post.'service]["client"],
                     <string>httpClients[post.'service]["url"],
                     route, post?.body, <map<string>> httpClients[post.'service]["headers"]);
+        } else if (play(resolvedSchemedTalk, PUT)) {
+            PUT put = check resolvedSchemedTalk.cloneWithType();
+            resolvedSchemedTalk.description = put.description;
+            io:println("-----");
+            io:println(put.description);
+            io:println("-----");
+            route = check buildRoute(put);            
+            response = check OFPost(
+                    <http:Client>httpClients[put.'service]["client"],
+                    <string>httpClients[put.'service]["url"],
+                    route, put?.body, <map<string>> httpClients[put.'service]["headers"]);
         } else if (play(resolvedSchemedTalk, PATCH)) {
             PATCH patch = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = patch.description;
@@ -271,6 +285,22 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
             io:println(response);
             io:println();
             played.push(memorize);
+        } else if (play(resolvedSchemedTalk, IsSubset)) {
+            IsSubset issubset = check resolvedSchemedTalk.cloneWithType();
+            resolvedSchemedTalk.description = issubset.description;
+            io:println("-----");
+            io:println(issubset.description);
+            io:println("-----");
+            if (issubset.values.length() == 0) { response = "No values to compare"; }
+            if (issubset.values.length() == 1) {
+                response = isSubset(response, issubset.values[0]);
+            } else {
+                response = isSubset(issubset.values[0], issubset.values[1]);
+            }
+            io:println("response of IsSubset is:");
+            io:println(response);
+            io:println();
+            played.push(issubset);
         }
 
         if (!play(resolvedSchemedTalk, SchemedTalkDoc)) {

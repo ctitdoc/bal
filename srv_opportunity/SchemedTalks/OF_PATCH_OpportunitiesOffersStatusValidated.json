@@ -1,0 +1,15 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Set an opp offer status as validated."
+    },
+    {
+        "type": "PATCH",
+        "service": "identity",
+        "route": "/opportunities/347/offers/953/status/validated",
+        "body": {
+            "offerId": 953,
+            "id": "347"
+        }
+    }
+]

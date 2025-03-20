@@ -8,6 +8,6 @@
         "service": "identity",
         "route": "/auth/providers/sign-in",
         "parameters": {"total": true},
-        "body": {"id":"000fz039","password":"zJMv[1]b7T","entityId":"107"}
+        "body": {"id":"XXXXXX","password":"XXXXX","entityId":"XXXX"}
     }
 ]

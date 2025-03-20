@@ -50,7 +50,7 @@ service http:Service / on new http:Listener(port) {
 
         match response {
             var e if e is error => {
-                error|() e1 = io:fileWriteJson(string `./responses/${requestEmitterIP}.json`, [e.message()]);
+                error|() e1 = io:fileWriteJson(string `./responses/${requestEmitterIP}.json`, [e.message(), e.detail().toBalString()]);
                 return http:BAD_REQUEST;
             }
             var foo if foo is json => {

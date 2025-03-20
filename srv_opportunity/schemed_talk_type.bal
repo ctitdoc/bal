@@ -28,7 +28,7 @@ type GETRequestType record {
 type GET record {
     *GETRequestType;
     "GET" 'type = "GET";
-    string description = "Request type GET executes an openflex or salesforce HTTP GET request: property service identifies one of the following OF/SF services: identity, selling, gateway, salesforce; route is the URI of the http request, parameters property are the http parameters and body of the request";
+    string description = "Request type GET executes an openflex or salesforce HTTP GET request: property service identifies one of the following OF/SF/SO services: identity, selling, gateway, salesforce, srv_opportunity; route is the URI of the http request, parameters property are the http parameters and body of the request";
 };
 
 type POSTRequestType record {
@@ -41,13 +41,19 @@ type POSTRequestType record {
 type POST record {
     *POSTRequestType;
     "POST" 'type = "POST";
-    string description = "Request type POST executes an openflex or salesforce HTTP POST request: property service identifies one of the following OF/SF services: identity, selling, gateway, salesforce; route is the URI of the http request, parameters and body properties are the http parameters and body of the request";
+    string description = "Request type POST executes an openflex or salesforce HTTP POST request: property service identifies one of the following OF/SF/SO services: identity, selling, gateway, salesforce, srv_opportunity; route is the URI of the http request, parameters and body properties are the http parameters and body of the request";
+};
+
+type PUT record {
+    *POSTRequestType;
+    "PUT" 'type = "PUT";
+    string description = "Request type PUT executes an openflex or salesforce HTTP PUT request: property service identifies one of the following OF/SF/SO services: identity, selling, gateway, salesforce, srv_opportunity; route is the URI of the http request, parameters and body properties are the http parameters and body of the request";
 };
 
 type PATCH record {
     *POSTRequestType;
     "PATCH" 'type = "PATCH";
-    string description = "Request type PATCH executes an openflex or salesforce HTTP PATCH request: property service identifies one of the following OF/SF services: identity, selling, gateway, salesforce; route is the URI of the http request, parameters and body properties are the http parameters and body of the request";
+    string description = "Request type PATCH executes an openflex or salesforce HTTP PATCH request: property service identifies one of the following OF/SF/SO services: identity, selling, gateway, salesforce, srv_opportunity; route is the URI of the http request, parameters and body properties are the http parameters and body of the request";
 };
 
 type ManagedPostRequestType record {
@@ -81,6 +87,16 @@ type AuthProvidersSign_in record  {
     "/auth/providers/sign-in" route = "/auth/providers/sign-in";
     string entityId;
     string description = "Request type AuthProvidersSign_in executes openflex POST endpoint /auth/providers/sign-in";
+    string id?;
+    string password?;
+};
+
+type AuthUsersSign_in record  {
+    *ManagedPostRequestType;
+    identity 'service = identity;
+    "AuthUsersSign_in" 'type = "AuthUsersSign_in";
+    "/auth/users/sign-in" route = "/auth/users/sign-in";
+    string description = "Request type AuthUsersSign_in executes openflex POST endpoint /auth/users/sign-in";
     string id?;
     string password?;
 };
@@ -147,4 +163,13 @@ type Memorize record {
     "Memorize" 'type = "Memorize";
     string description = "Memorize a json value of the last response: the asWhat map property specifies: as the key : the name under which the value is memorized, and as the key value: either the name of the key referencing the value if the reponse is a map, or the index of the value if the response is an array.";
     map<string|int> asWhat;
+};
+
+type IsSubset record {
+    *SchemedTalk;
+    "IsSubset" 'type = "IsSubset";
+    string description = "If 2nd value of 'values' is a subset of the first value, then executes the 'true' schemedTalks if it/they exist, otherwise the 'false' ones if it/they exist. If there is only one value in 'values', then the last response is taken as the first value. 'true' and 'false' properties are not yet supported and the response is the boolean value of the condition evaluation. If no values are provided teh response is 'No values to compare'";
+    json[] values;
+    SchemedTalk[] 'true?;
+    SchemedTalk[] 'false?;
 };

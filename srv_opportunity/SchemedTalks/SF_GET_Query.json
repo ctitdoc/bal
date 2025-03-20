@@ -9,8 +9,9 @@
     {
         "type": "GET",
         "service": "salesforce",
+        "route": "/services/data/v58.0/query/?q=SELECT+EntityDefinitionId,QualifiedApiName+FROM+FieldDefinition+WHERE+DurableId='Lead.00N0Y00000EXPoo'",
         "route1": "/services/data/v58.0/query/?q=SELECT+Id,EventType,CreatedDate,LogFile+FROM+EventLogFile+WHERE+EventType='API'",
         "route2": "/services/data/v58.0/query/?q=SELECT+Id,LogLength,LogUserId,StartTime+FROM+ApexLog+ORDER+BY+StartTime+DESC",
-        "route": "/services/data/v58.0/query/?q=SELECT+FIELDS(ALL)+FROM+Opportunity+WHERE+Id='006Jv00000O6ptGIAR'"
+        "route3": "/services/data/v58.0/query/?q=SELECT+FIELDS(ALL)+FROM+Opportunity+WHERE+Id='006Jv00000O6ptGIAR'"
     }
 ]

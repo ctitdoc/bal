@@ -1,0 +1,58 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Get get vehicle by chassis of a POS.",
+        "PREPRODIT": [
+            {
+                "type": "AuthProvidersSign_in",
+                "entityId": "300"
+            },
+            {
+                "type": "GET",
+                "service": "selling",
+                "route": "/vehicles/cars",
+                "parameters": {
+                    "total": true,
+                    "pointOfSaleIds": [
+                        "454"
+                    ],
+                    "chassis": "WVGZZZ5NZCW571130"
+                }
+            }
+        ],
+        "PREPRODFR": [
+            {
+                "type": "AuthProvidersSign_in",
+                "entityId": "1647"
+            },
+            {
+                "type": "GET",
+                "service": "selling",
+                "route": "/vehicles/cars",
+                "parameters": {
+                    "total": true,
+                    "pointOfSaleIds": [
+                        "2299"
+                    ],
+                    "chassis": "WBA41GV050CU31512"
+                }
+            }
+        ]
+    },
+    {
+        "type": "AuthProvidersSign_in",
+        "entityId": "300"
+    },
+    {
+        "type": "GET",
+        "service": "selling",
+        "route": "/vehicles/cars",
+        "parameters": {
+            "total": true,
+            "pointOfSaleIds": [
+                "454"
+            ],
+            "chassis": "WVGZZZ5NZCW571130"
+        }
+    }
+]

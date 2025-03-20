@@ -1,0 +1,28 @@
+[
+    {
+        "type": "SchemedTalkDoc",
+        "description": "Service Opportunity SalesPerson endpoint test: set in IsSubset.values, an expected sale person json value the response to this end point is expected ton contain, and this test return true if it's such a case otherwise false."
+    },
+    {
+        "type": "SOApiLoginCheck"
+    },
+    {
+        "type": "GET",
+        "service": "srv_opportunity",
+        "route": "/api/sales_persons?pointOfSaleId=155"
+    },
+    {
+        "type": "IsSubset",
+        "values": [
+            [
+                {
+                  "id": 1363,
+                  "email": "gbendini@terranovaws.it",
+                  "name": "CONCESSIONARIA",
+                  "firstname": "Venditore",
+                  "deleted": false
+                }
+            ]
+        ]
+    }
+]

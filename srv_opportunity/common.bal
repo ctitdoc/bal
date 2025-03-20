@@ -40,12 +40,16 @@ public function OFUpdate(string updateMethod, http:Client apiClient, string apiU
             response = check apiClient->post(route, processedBody, headers);
         } else if (updateMethod == "PATCH") {
             response = check apiClient->patch(route, processedBody, headers);
+        } else if (updateMethod == "PUT") {
+            response = check apiClient->put(route, processedBody, headers);
         }
     } else {
-        if (updateMethod == "PATCH") {
+        if (updateMethod == "POST") {
             response = check apiClient->post(route, processedBody);
         } else if (updateMethod == "PATCH") {
             response = check apiClient->patch(route, processedBody);
+        } else if (updateMethod == "PUT") {
+            response = check apiClient->put(route, processedBody);
         }
     }
     io:println("receive response:");
@@ -115,6 +119,11 @@ public function OFPatch(http:Client apiClient, string apiUrl, string route, anyd
     return OFUpdate("PATCH", apiClient, apiUrl, route, body, headers, urlEncodeBody);
 }
 
+public function OFPut(http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers, boolean urlEncodeBody = false) returns json|error {
+    return OFUpdate("PUT", apiClient, apiUrl, route, body, headers, urlEncodeBody);
+}
+
+
 public function OFPost(http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers, boolean urlEncodeBody = false) returns json|error {
     return OFUpdate("POST", apiClient, apiUrl, route, body, headers, urlEncodeBody);
 }
@@ -167,7 +176,7 @@ public function hasPlayed((SchemedTalk|map<json>)[] schemedTalks, typedesc<anyda
     return (result.length() > 0);
 }
 
-public function buildRoute(GET|POST|PATCH request) returns string|error {
+public function buildRoute(GET|POST|PATCH|PUT request) returns string|error {
     string route = <string>request.route;
     if (request?.parameters != ()) {
         route += "?";
@@ -211,4 +220,44 @@ function getRequestEmitterIP(http:Request request) returns string {
         }
     }
     return requestEmitterIP;
+}
+
+// Fonction récursive pour vérifier si v2 est un sous-ensemble de v1
+function isSubset(json v1, json v2) returns boolean {
+    if v2 is map<anydata> {
+        if v1 is map<anydata> {
+            foreach var key in v2.keys() {
+                if !v1.hasKey(key) {  // Clé absente dans v1
+                    return false;
+                }
+                if !isSubset(v1[key], v2[key]) { // Vérification récursive ou valeur simple
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    } 
+    else if v2 is int | float | boolean | string {
+        return v1 is int | float | boolean | string && v1 == v2;
+    }
+    else if v2 is json[] { // Cas où v2 est un array
+        if v1 is json[] {
+            foreach json itemV2 in v2 {
+                boolean found = false;
+                foreach json itemV1 in v1 {
+                    if isSubset(itemV1, itemV2) { // Vérification récursive pour chaque élément
+                        found = true;
+                        break;
+                    }
+                }
+                if !found {
+                    return false; // Si un élément de v2 n'est pas trouvé dans v1, ce n'est pas un sous-ensemble
+                }
+            }
+            return true;
+        }
+        return false; // Si v1 n'est pas un array mais v2 en est un
+    }
+    return false; // Types incompatibles
 }

@@ -1,0 +1,34 @@
+[
+  {
+    "type": "SchemedTalkDoc",
+    "description": "This schemed talk executes the User request type to gets the sellers of a Point Of Sale; it previously requires an authentification to the entity of this POS via the AuthProvidersSign_in reques type.",
+    "PRODFR": [
+      {
+        "type": "AuthProvidersSign_in",
+        "entityId": "1643"
+      },
+      {
+        "type": "Users",
+        "pointOfSaleIds": [
+          "2289"
+        ],
+        "groupTypes": [
+          "3"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "AuthProvidersSign_in",
+    "entityId": "1643"
+  },
+  {
+    "type": "Users",
+    "pointOfSaleIds": [
+      "2289"
+    ],
+    "groupTypes": [
+      "3"
+    ]
+  }
+]
