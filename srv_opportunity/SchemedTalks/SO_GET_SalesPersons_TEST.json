@@ -24,5 +24,19 @@
                 }
             ]
         ]
+    },
+    {
+        "type": "Equal",
+        "values": [
+            [
+                {
+                  "id": 1363,
+                  "email": "gbendini@terranovaws.it",
+                  "name": "CONCESSIONARIA",
+                  "firstname": "Venditore",
+                  "deleted": false
+                }
+            ]
+        ]
     }
 ]

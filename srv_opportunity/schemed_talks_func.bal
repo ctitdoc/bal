@@ -7,6 +7,7 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
 
     //conf
     map<string|map<string>>|error & readonly ofAuths = jsondata:parseString(os:getEnv("OPENFLEX_TEST_AUTH"), {});
+    map<string>|error & readonly OFUserCredentials = jsondata:parseString(os:getEnv("OPENFLEX_TEST_USER_AUTH"), {});
     map<string>|error SFCredentials = jsondata:parseString(os:getEnv("SALESFORCE_TEST_AUTH"), {});
     SFCredentials = (SFCredentials is error) ? {} : SFCredentials;
     map<string>|error SOCredentials = jsondata:parseString(os:getEnv("SRV_OPPORTUNITY_TEST_AUTH"), {});
@@ -25,8 +26,6 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
         }
     }
 
-
-
     json sfConf = check getConf(<string?>auths["env"]);
 
     string sellingUrl = check getContainerEnvVar(conf, "php-fpm", "OPENFLEX_SELLING_URI");
@@ -37,7 +36,7 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
     io:println(gatewayUrl);
     string salesforceUrl = check getContainerEnvVar(sfConf, "php-fpm", "SALESFORCE_API_URL");
     io:println(salesforceUrl);
-    string soUrl =  <string> (check SOCredentials)["url"];
+    string soUrl = <string>(check SOCredentials)["url"];
     io:println(soUrl);
     io:println();
 
@@ -52,12 +51,13 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
     http:Client SOClient = check new (soUrl, {timeout: 180});
 
     map<string> headers = {};
+    map<string> userHeaders = {};
     map<string> sfHeaders = {};
     map<string> soHeaders = {};
 
     map<map<http:Client|string|map<string>>> httpClients = {
-        identity: {"client": OFAuthClient, "url": authUrl, "headers": headers},
-        selling: {"client": OFSellingClient, "url": sellingUrl, "headers": headers},
+        identity: {"client": OFAuthClient, "url": authUrl, "headers": headers, "userHeaders": userHeaders},
+        selling: {"client": OFSellingClient, "url": sellingUrl, "headers": headers, "userHeaders": userHeaders},
         gateway: {"client": OFGatewayClient, "url": gatewayUrl, "headers": headers},
         salesforce: {"client": SFClient, "url": salesforceUrl, "headers": sfHeaders},
         srv_opportunity: {"client": SOClient, "url": soUrl, "headers": soHeaders}
@@ -68,56 +68,46 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
     string route;
     string? email = "";
     (SchemedTalk|map<json>)[] played = [];
-    map<json> memory={};
+    map<json> memory = {};
     foreach SchemedTalk schemedTalk in schemedTalks {
-            SchemedTalk resolvedSchemedTalk = check resolveExpressions(schemedTalk.toJsonString(), response, memory);
+        SchemedTalk resolvedSchemedTalk = check resolveExpressions(schemedTalk.toJsonString(), response, memory);
         if (play(resolvedSchemedTalk, GET)) {
             GET get = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = get.description;
-            io:println("-----");
-            io:println(get.description);
-            io:println("-----");
+            printTitle(get.description);
             route = check buildRoute(get);
-            response = check (<http:Client>httpClients[get.'service]["client"])->get(route, <map<string>> httpClients[get.'service]["headers"]);
+            response = check (<http:Client>httpClients[get.'service]["client"])->get(route, <map<string>>httpClients[get.'service][get.headers]);
             prGet((<string>httpClients[get.'service]["url"]) + route, response);
         } else if (play(resolvedSchemedTalk, POST)) {
             POST post = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = post.description;
-            io:println("-----");
-            io:println(post.description);
-            io:println("-----");
-            route = check buildRoute(post);            
+            printTitle(post.description);
+            route = check buildRoute(post);
             response = check OFPost(
                     <http:Client>httpClients[post.'service]["client"],
                     <string>httpClients[post.'service]["url"],
-                    route, post?.body, <map<string>> httpClients[post.'service]["headers"]);
+                    route, post?.body, <map<string>>httpClients[post.'service][post.headers]);
         } else if (play(resolvedSchemedTalk, PUT)) {
             PUT put = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = put.description;
-            io:println("-----");
-            io:println(put.description);
-            io:println("-----");
-            route = check buildRoute(put);            
+            printTitle(put.description);
+            route = check buildRoute(put);
             response = check OFPost(
                     <http:Client>httpClients[put.'service]["client"],
                     <string>httpClients[put.'service]["url"],
-                    route, put?.body, <map<string>> httpClients[put.'service]["headers"]);
+                    route, put?.body, <map<string>>httpClients[put.'service][put.headers]);
         } else if (play(resolvedSchemedTalk, PATCH)) {
             PATCH patch = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = patch.description;
-            io:println("-----");
-            io:println(patch.description);
-            io:println("-----");
-            route = check buildRoute(patch);            
+            printTitle(patch.description);
+            route = check buildRoute(patch);
             response = check OFPatch(
                     <http:Client>httpClients[patch.'service]["client"],
                     <string>httpClients[patch.'service]["url"],
-                    route, patch?.body, <map<string>> httpClients[patch.'service]["headers"]);
+                    route, patch?.body, <map<string>>httpClients[patch.'service][patch.headers]);
         } else if (play(resolvedSchemedTalk, SchemedTalkDoc)) {
             SchemedTalkDoc schemedTalkDoc = check resolvedSchemedTalk.cloneWithType();
-            io:println("-----");
-            io:println(schemedTalkDoc.description);
-            io:println("-----");
+            printTitle(schemedTalkDoc.description);
             played.push(schemedTalkDoc);
             response = check schemedTalkDoc.cloneWithType();
         } else if (play(resolvedSchemedTalk, ProvidersEntities)) {
@@ -126,9 +116,7 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
             if checkUserAuth {
                 OFCredentials = {"id": <string>(providerEntities.id != () ? providerEntities.id : ""), "password": <string>(providerEntities.password != () ? providerEntities.password : "")};
             }
-            io:println("-----");
-            io:println(providerEntities.description);
-            io:println("-----");
+            printTitle(providerEntities.description);
             response = check OFPost(OFAuthClient, authUrl, providerEntities.route, OFCredentials, {});
             played.push(providerEntities);
         } else if (play(resolvedSchemedTalk, AuthProvidersSign_in)) {
@@ -138,9 +126,7 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
                 OFCredentials = {"id": <string>(authProvidersSign_in.id != () ? authProvidersSign_in.id : ""), "password": <string>(authProvidersSign_in.password != () ? authProvidersSign_in.password : "")};
             }
             OFCredentials["entityId"] = authProvidersSign_in.entityId;
-            io:println("-----");
-            io:println(authProvidersSign_in.description);
-            io:println("-----");
+            printTitle(authProvidersSign_in.description);
             response = check OFPost(OFAuthClient, authUrl, authProvidersSign_in.route, OFCredentials, {});
             string token = check response.token;
             headers = {"Authorization": "Bearer " + token};
@@ -148,12 +134,27 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
             httpClients[selling]["headers"] = headers;
             httpClients[gateway]["headers"] = headers;
             played.push(authProvidersSign_in);
+        } else if (play(resolvedSchemedTalk, AuthUsersSign_in)) {
+            AuthUsersSign_in authUsersSign_in = check resolvedSchemedTalk.cloneWithType();
+            resolvedSchemedTalk.description = authUsersSign_in.description;
+            if checkUserAuth {
+                OFUserCredentials = {
+                                        "id": <string>(authUsersSign_in.id != () ? authUsersSign_in.id : ""), 
+                                        "password": <string>(authUsersSign_in.password != () ? authUsersSign_in.password : ""),
+                                        "mfaToken": <string>(authUsersSign_in.mfaToken != () ? authUsersSign_in.mfaToken : "")
+                                    };
+            }
+            printTitle(authUsersSign_in.description);
+            response = check OFPost(OFAuthClient, authUrl, authUsersSign_in.route, check OFUserCredentials, {});
+            string token = check response.token;
+            userHeaders = {"Authorization": "Bearer " + token};
+            httpClients[authUsersSign_in.'service]["userHeaders"] = userHeaders;
+            httpClients[selling]["userHeaders"] = userHeaders;
+            played.push(authUsersSign_in);
         } else if (play(resolvedSchemedTalk, AuthProvidersPassword)) {
             AuthProvidersPassword authProvidersPassword = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = authProvidersPassword.description;
-            io:println("-----");
-            io:println(authProvidersPassword.description);
-            io:println("-----");
+            printTitle(authProvidersPassword.description);
             response = check OFPatch(OFAuthClient, authUrl,
                     string `${authProvidersPassword.route}/${authProvidersPassword.currentPassword}}`,
                     {"password": authProvidersPassword.newPassword}, {});
@@ -169,9 +170,7 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
                 route += string `groupTypes[]=${'type}&`;
             }
             route += "total=true";
-            io:println("-----");
-            io:println(users.description);
-            io:println("-----");
+            printTitle(users.description);
             UserResponse userResponse = check OFAuthClient->get(route, headers);
             prGet(authUrl + route, userResponse);
             email = userResponse.items[0].email;
@@ -182,9 +181,7 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
             CreateOpportunity createOpportunity = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = createOpportunity.description;
             Opportunity opportunity = check createOpportunity.opportunity.cloneWithType();
-            io:println("-----");
-            io:println(createOpportunity.description);
-            io:println("-----");
+            printTitle(createOpportunity.description);
 
             //get car by chassis and create opportunity
             //see https://ballerina.io/learn/by-example/http-client-send-request-receive-response/
@@ -225,9 +222,7 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
         } else if (play(resolvedSchemedTalk, SFAuth2Token)) {
             SFAuth2Token sfAuthToken = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = sfAuthToken.description;
-            io:println("-----");
-            io:println(sfAuthToken.description);
-            io:println("-----");
+            printTitle(sfAuthToken.description);
             if checkUserAuth {
                 SFCredentials = {
                     "username": <string>(sfAuthToken.username != () ? sfAuthToken.username : ""),
@@ -245,9 +240,7 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
         } else if (play(resolvedSchemedTalk, SOApiLoginCheck)) {
             SOApiLoginCheck soApiLoginCheck = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = soApiLoginCheck.description;
-            io:println("-----");
-            io:println(soApiLoginCheck.description);
-            io:println("-----");
+            printTitle(soApiLoginCheck.description);
             if checkUserAuth {
                 SOCredentials = {
                     "username": <string>(soApiLoginCheck.username != () ? soApiLoginCheck.username : ""),
@@ -265,20 +258,20 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
         } else if (play(resolvedSchemedTalk, SOApiOpportunities)) {
             SOApiOpportunities soApiOpportunities = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = soApiOpportunities.description;
-            io:println("-----");
-            io:println(soApiOpportunities.description);
-            io:println("-----");
-            response = check OFPost(SOClient, soUrl, soApiOpportunities.route, soApiOpportunities.body, <map<string>> httpClients[soApiOpportunities.'service]["headers"]);
+            printTitle(soApiOpportunities.description);
+            response = check OFPost(SOClient, soUrl, soApiOpportunities.route, soApiOpportunities.body, <map<string>>httpClients[soApiOpportunities.'service]["headers"]);
             played.push(soApiOpportunities);
         } else if (play(resolvedSchemedTalk, Memorize)) {
             Memorize memorize = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = memorize.description;
-            io:println("-----");
-            io:println(memorize.description);
-            io:println("-----");
+            printTitle(memorize.description);
             foreach [string, string|int] [key, value] in memorize.asWhat.entries() {
-                if response is map<json> && value is string && response[value] is json {memory[key] = response[value];}
-                if response is json[] && value is int && response[value] is json {memory[key] = response[value];}
+                if response is map<json> && value is string && response[value] is json {
+                    memory[key] = response[value];
+                }
+                if response is json[] && value is int && response[value] is json {
+                    memory[key] = response[value];
+                }
             }
             response = memory;
             io:println("response of Memorize request is current memory state:");
@@ -288,10 +281,10 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
         } else if (play(resolvedSchemedTalk, IsSubset)) {
             IsSubset issubset = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = issubset.description;
-            io:println("-----");
-            io:println(issubset.description);
-            io:println("-----");
-            if (issubset.values.length() == 0) { response = "No values to compare"; }
+            printTitle(issubset.description);
+            if (issubset.values.length() == 0) {
+                response = "No values to compare";
+            }
             if (issubset.values.length() == 1) {
                 response = isSubset(response, issubset.values[0]);
             } else {
@@ -301,6 +294,22 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
             io:println(response);
             io:println();
             played.push(issubset);
+        } else if (play(resolvedSchemedTalk, Equal)) {
+            Equal equal = check resolvedSchemedTalk.cloneWithType();
+            resolvedSchemedTalk.description = equal.description;
+            printTitle(equal.description);
+            if (equal.values.length() == 0) {
+                response = "No values to compare";
+            }
+            if (equal.values.length() == 1) {
+                response = (response == equal.values[0]);
+            } else {
+                response = equal.values[0] == equal.values[1];
+            }
+            io:println("response of Equal is:");
+            io:println(response);
+            io:println();
+            played.push(equal);
         }
 
         if (!play(resolvedSchemedTalk, SchemedTalkDoc)) {
@@ -310,4 +319,10 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
     }
 
     return responses;
+}
+
+function printTitle(string text) {
+            io:println("-----");
+            io:println(text);
+            io:println("-----");
 }

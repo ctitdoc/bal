@@ -4,19 +4,23 @@ public type SchemedTalk record {
     string description?;
     SchemedTalk[] talkScheme?;
 };
+
 public type SchemedTalkDoc record {
     *SchemedTalk;
     "SchemedTalkDoc" 'type = "SchemedTalkDoc";
     string description;
 };
 
-public enum ManagedService {identity, selling, gateway, salesforce, srv_opportunity};
+public enum ManagedService {
+    identity, selling, gateway, salesforce, srv_opportunity
+};
 
 type RequestType record {
     *SchemedTalk;
     ManagedService 'service;
     string 'type = "Request";
     string route?;
+    string headers = "headers";
 };
 
 type GETRequestType record {
@@ -36,7 +40,6 @@ type POSTRequestType record {
     string 'type = "POST";
     json body?;
 };
-
 
 type POST record {
     *POSTRequestType;
@@ -68,7 +71,7 @@ type ManagedGetRequestType record {
     string description = "";
 };
 
-type ProvidersEntities record  {
+type ProvidersEntities record {
     // fix me: if one replace RequestType by ManagedPostRequestType then {"type": "ProvidersEntities"} 
     // is no more recognized as this record type like the other manged post request : AuthProvidersSign_in, CreateOpportunity... why ?
     *ManagedPostRequestType;
@@ -80,7 +83,7 @@ type ProvidersEntities record  {
     string password?;
 };
 
-type AuthProvidersSign_in record  {
+type AuthProvidersSign_in record {
     *ManagedPostRequestType;
     identity 'service = identity;
     "AuthProvidersSign_in" 'type = "AuthProvidersSign_in";
@@ -91,7 +94,7 @@ type AuthProvidersSign_in record  {
     string password?;
 };
 
-type AuthUsersSign_in record  {
+type AuthUsersSign_in record {
     *ManagedPostRequestType;
     identity 'service = identity;
     "AuthUsersSign_in" 'type = "AuthUsersSign_in";
@@ -99,6 +102,7 @@ type AuthUsersSign_in record  {
     string description = "Request type AuthUsersSign_in executes openflex POST endpoint /auth/users/sign-in";
     string id?;
     string password?;
+    string mfaToken?;
 };
 
 type AuthProvidersPassword record {
@@ -127,7 +131,7 @@ type CreateOpportunity record {
     string description = "Schemed talk CreateOpportunity creates an openflex opportunity from its 'opportunity' property (having service opportunity's json format), via the follwing talk scheme: if the SF opportunity has a chassis : executes GET /vehicles/cars?chassis=<chassis> to get the vehicle id and set it in the opportunity json; executes POST /offers with this json; from the reponse with the created OF opportunity ID, executes /opportunities/<OPPORTUNITY_ID>/comments to add the SF opportunity comment to the OF opportunity; then for check purpose : executes /opportunities/<OPPORTUNITY_ID> to check (visually) the content of the created opportunity, then /opportunities/<OPPORTUNITY_ID>/offers to get the ID of the created offer (the last of the returned offer list), then /offers?ids[]=<OFFER_ID> to check (visually) its content";
 };
 
-type SFAuth2Token record  {
+type SFAuth2Token record {
     *ManagedPostRequestType;
     salesforce 'service = salesforce;
     "SFAuth2Token" 'type = "SFAuth2Token";
@@ -169,6 +173,15 @@ type IsSubset record {
     *SchemedTalk;
     "IsSubset" 'type = "IsSubset";
     string description = "If 2nd value of 'values' is a subset of the first value, then executes the 'true' schemedTalks if it/they exist, otherwise the 'false' ones if it/they exist. If there is only one value in 'values', then the last response is taken as the first value. 'true' and 'false' properties are not yet supported and the response is the boolean value of the condition evaluation. If no values are provided teh response is 'No values to compare'";
+    json[] values;
+    SchemedTalk[] 'true?;
+    SchemedTalk[] 'false?;
+};
+
+type Equal record {
+    *SchemedTalk;
+    "Equal" 'type = "Equal";
+    string description = "If 2nd value of 'values' is equal to the first value, then executes the 'true' schemedTalks if it/they exist, otherwise the 'false' ones if it/they exist. If there is only one value in 'values', then the last response is taken as the first value. 'true' and 'false' properties are not yet supported and the response is the boolean value of the condition evaluation. If no values are provided teh response is 'No values to compare'";
     json[] values;
     SchemedTalk[] 'true?;
     SchemedTalk[] 'false?;

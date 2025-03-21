@@ -4,11 +4,23 @@
         "description": "Set an opp offer status as validated."
     },
     {
+        "type": "AuthUsersSign_in"
+    },
+    {
         "type": "PATCH",
-        "service": "identity",
+        "service": "selling",
         "route": "/opportunities/347/offers/953/status/validated",
+        "headers": "userHeaders",
         "body": {
             "offerId": 953,
+            "offerValidityDate": "2025-03-19T15:52:00",
+            "offerComment": "string",
+            "reminderDays": 0,
+            "bonusPrice": 0,
+            "penaltyPrice": 0,
+            "weightPenaltyPrice": 0,
+            "superBonusPrice": 0,
+            "socialLeasingPrice": 0,
             "id": "347"
         }
     }
