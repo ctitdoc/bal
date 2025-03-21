@@ -60,14 +60,16 @@ public function OFUpdate(string updateMethod, http:Client apiClient, string apiU
 
 function resolveExpressions(string jsonString, json response, map<json> memory = {}) returns SchemedTalk|error {
 
-    string:RegExp regex = re `<\?([:\w]+)\?>`;
-    if !(response is map<json>) {
-        SchemedTalk resolvedSchemedTalk = check (<anydata>(check jsonString.fromJsonString())).cloneWithType();
-        return resolvedSchemedTalk;
-    }
+    string:RegExp regex = re `"<\?([:\w]+)\?>"`;
+
     //see https://github.com/ballerina-platform/ballerina-lang/issues/42331
     // about isolation, readonlyness and finalness...
-    final map<json> & readonly work = response.cloneReadOnly();
+    final map<json> & readonly work;
+    if !(response is map<json>) {
+        work = {};
+    } else {
+         work = response.cloneReadOnly();
+    }
     final map<json> & readonly mem = memory.cloneReadOnly();
 
     regexp:Replacement replaceFunction = isolated function(regexp:Groups groups) returns string {
@@ -85,18 +87,10 @@ function resolveExpressions(string jsonString, json response, map<json> memory =
             if memorySpan is () {return "<?" + key + "?>";}
             key = memorySpan.substring();
             value = mem[key];
-            if value is string {
-                return value;
-            } else {
-                return "<?" + key + "?>";
-            }
+            return value.toJsonString();
         } else {
             value = work[key];
-            if value is string {
-                return value;
-            } else {
-                return "<?" + key + "?>";
-            }
+            return value.toJsonString();
         }
     };
 

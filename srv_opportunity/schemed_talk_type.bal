@@ -166,7 +166,7 @@ type Memorize record {
     *SchemedTalk;
     "Memorize" 'type = "Memorize";
     string description = "Memorize a json value of the last response: the asWhat map property specifies: as the key : the name under which the value is memorized, and as the key value: either the name of the key referencing the value if the reponse is a map, or the index of the value if the response is an array.";
-    map<string|int> asWhat;
+    string|map<string|int> asWhat;
 };
 
 type IsSubset record {

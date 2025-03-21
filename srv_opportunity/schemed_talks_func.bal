@@ -139,10 +139,10 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
             resolvedSchemedTalk.description = authUsersSign_in.description;
             if checkUserAuth {
                 OFUserCredentials = {
-                                        "id": <string>(authUsersSign_in.id != () ? authUsersSign_in.id : ""), 
-                                        "password": <string>(authUsersSign_in.password != () ? authUsersSign_in.password : ""),
-                                        "mfaToken": <string>(authUsersSign_in.mfaToken != () ? authUsersSign_in.mfaToken : "")
-                                    };
+                    "id": <string>(authUsersSign_in.id != () ? authUsersSign_in.id : ""),
+                    "password": <string>(authUsersSign_in.password != () ? authUsersSign_in.password : ""),
+                    "mfaToken": <string>(authUsersSign_in.mfaToken != () ? authUsersSign_in.mfaToken : "")
+                };
             }
             printTitle(authUsersSign_in.description);
             response = check OFPost(OFAuthClient, authUrl, authUsersSign_in.route, check OFUserCredentials, {});
@@ -265,12 +265,23 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
             Memorize memorize = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = memorize.description;
             printTitle(memorize.description);
-            foreach [string, string|int] [key, value] in memorize.asWhat.entries() {
-                if response is map<json> && value is string && response[value] is json {
-                    memory[key] = response[value];
+            string|map<string|int>|error asWhat = memorize.asWhat.cloneWithType();
+            match asWhat {
+                var e if e is error => {
+
                 }
-                if response is json[] && value is int && response[value] is json {
-                    memory[key] = response[value];
+                var key if key is string => {
+                    memory[<string> key] = response;
+                }
+                var fields if fields is map<string|int> => {
+                    foreach [string, string|int] [key, value] in fields.entries() {
+                        if response is map<json> && value is string && response[value] is json {
+                            memory[key] = response[value];
+                        }
+                        if response is json[] && value is int && response[value] is json {
+                            memory[key] = response[value];
+                        }
+                    }
                 }
             }
             response = memory;
@@ -322,7 +333,7 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
 }
 
 function printTitle(string text) {
-            io:println("-----");
-            io:println(text);
-            io:println("-----");
+    io:println("-----");
+    io:println(text);
+    io:println("-----");
 }
