@@ -265,13 +265,10 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
             Memorize memorize = check resolvedSchemedTalk.cloneWithType();
             resolvedSchemedTalk.description = memorize.description;
             printTitle(memorize.description);
-            string|map<string|int>|error asWhat = memorize.asWhat.cloneWithType();
+            string|map<string|int> asWhat = check memorize.asWhat.cloneWithType();
             match asWhat {
-                var e if e is error => {
-
-                }
                 var key if key is string => {
-                    memory[<string> key] = response;
+                    memory[key] = response;
                 }
                 var fields if fields is map<string|int> => {
                     foreach [string, string|int] [key, value] in fields.entries() {
