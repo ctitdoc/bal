@@ -1,0 +1,17 @@
+[
+    {
+        "type": "AuthProvidersSign_in",
+        "entityId": "107"
+    },
+    {
+        "type": "GET",
+        "service": "selling",
+        "route": "/opportunities/347/offers"
+    },
+    {
+        "type": "Memorize",
+        "asWhat": {
+            "offerId":"jsonpath:first:$.items[:1].id"
+        }
+    }
+]
