@@ -60,7 +60,7 @@ public function OFUpdate(string updateMethod, http:Client apiClient, string apiU
 
 function resolveExpressions(string jsonString, json response, map<json> memory = {}) returns SchemedTalk|error {
 
-    string:RegExp regex = re `"<\?([:\w]+)\?>"`;
+    string:RegExp regex = re `"?<\?([:\w]+)\?>"?`;
 
     //see https://github.com/ballerina-platform/ballerina-lang/issues/42331
     // about isolation, readonlyness and finalness...
@@ -68,7 +68,7 @@ function resolveExpressions(string jsonString, json response, map<json> memory =
     if !(response is map<json>) {
         work = {};
     } else {
-         work = response.cloneReadOnly();
+        work = response.cloneReadOnly();
     }
     final map<json> & readonly mem = memory.cloneReadOnly();
 
@@ -82,19 +82,41 @@ function resolveExpressions(string jsonString, json response, map<json> memory =
         json? value = ();
         if memoryPattern.matchAt(key, 0) is regexp:Span {
             regexp:Groups? memoryGroup = memoryPattern.findGroups(key);
-            if memoryGroup is () {return "<?" + key + "?>";}
+            if memoryGroup is () {
+                return "<?" + key + "?>";
+            }
             regexp:Span? memorySpan = memoryGroup[1];
-            if memorySpan is () {return "<?" + key + "?>";}
+            if memorySpan is () {
+                return "<?" + key + "?>";
+            }
             key = memorySpan.substring();
             value = mem[key];
-            return value.toJsonString();
+            if value is string {
+                value = value.toJsonString();
+                if value is string && value.startsWith("\"") && value.endsWith("\"") {
+                    return value.substring(1, value.length() - 1);
+                } else {
+                    return <string> value;
+                }
+            } else {
+                return value.toJsonString();
+            }
         } else {
             value = work[key];
-            return value.toJsonString();
+            if value is string {
+                value = value.toJsonString();
+                if value is string && value.startsWith("\"") && value.endsWith("\"") {
+                    return value.substring(1, value.length() - 1);
+                } else {
+                    return <string> value;
+                }
+            } else {
+                return value.toJsonString();
+            }
         }
     };
 
-    string result = regex.replace(jsonString, replaceFunction);
+    string result = regex.replaceAll(jsonString, replaceFunction);
     SchemedTalk resolvedSchemedTalk = check (<anydata>(check result.fromJsonString())).cloneWithType();
     return resolvedSchemedTalk;
 }
@@ -116,7 +138,6 @@ public function OFPatch(http:Client apiClient, string apiUrl, string route, anyd
 public function OFPut(http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers, boolean urlEncodeBody = false) returns json|error {
     return OFUpdate("PUT", apiClient, apiUrl, route, body, headers, urlEncodeBody);
 }
-
 
 public function OFPost(http:Client apiClient, string apiUrl, string route, anydata body, map<string>? headers, boolean urlEncodeBody = false) returns json|error {
     return OFUpdate("POST", apiClient, apiUrl, route, body, headers, urlEncodeBody);
@@ -221,7 +242,7 @@ function isSubset(json v1, json v2) returns boolean {
     if v2 is map<anydata> {
         if v1 is map<anydata> {
             foreach var key in v2.keys() {
-                if !v1.hasKey(key) {  // Clé absente dans v1
+                if !v1.hasKey(key) { // Clé absente dans v1
                     return false;
                 }
                 if !isSubset(v1[key], v2[key]) { // Vérification récursive ou valeur simple
@@ -231,9 +252,9 @@ function isSubset(json v1, json v2) returns boolean {
             return true;
         }
         return false;
-    } 
-    else if v2 is int | float | boolean | string {
-        return v1 is int | float | boolean | string && v1 == v2;
+    }
+    else if v2 is int|float|boolean|string {
+        return v1 is int|float|boolean|string && v1 == v2;
     }
     else if v2 is json[] { // Cas où v2 est un array
         if v1 is json[] {
@@ -254,4 +275,46 @@ function isSubset(json v1, json v2) returns boolean {
         return false; // Si v1 n'est pas un array mais v2 en est un
     }
     return false; // Types incompatibles
+}
+
+function substringBefore(json result, string needle) returns string?|error {
+    string value;
+    if (result is json[]) {
+        value = <string>result[0];
+    } else {
+        value = <string>result;
+    }
+    int? index = value.indexOf(needle);
+    return index > 0 ? value.substring(0, <int>index) : value;
+}
+
+function decodeFunctionCall(string input) returns map<string|string[]>|error {
+    // Extraire le nom de la fonction (la partie avant la parenthèse ouvrante)
+    string fnName = input.substring(0, <int>input.indexOf("(")).trim();
+
+    // Extraire la chaîne située entre la première '(' et la dernière ')'
+    int startParams = <int>input.indexOf("(") + 1;
+    int endParams = <int>input.lastIndexOf(")");
+    string paramsSubstring = input.substring(startParams, endParams).trim();
+
+    // Séparer les paramètres sur la virgule.
+    // (On suppose ici que les paramètres sont des chaînes simples sans virgule interne)
+    string:RegExp r = re `,`;
+    string[] rawParams = r.split(paramsSubstring);
+
+    string[] parameters = [];
+
+    // Parcourir chaque paramètre, supprimer les espaces et les guillemets
+    foreach string p in rawParams {
+        string trimmed = p.trim();
+        if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
+            trimmed = trimmed.substring(1, trimmed.length() - 1);
+        }
+        parameters.push(trimmed);
+    }
+
+    return {
+        "functionName": fnName,
+        "parameters": parameters
+    };
 }

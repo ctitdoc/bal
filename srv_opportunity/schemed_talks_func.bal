@@ -1,7 +1,9 @@
 import ballerina/data.jsondata;
 import ballerina/http;
 import ballerina/io;
+import ballerina/lang.runtime;
 import ballerina/os;
+import ballerina/time;
 
 public function process(SchemedTalk[] schemedTalks, string countryCode, boolean checkUserAuth = false) returns json|error? {
 
@@ -263,28 +265,9 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
             played.push(soApiOpportunities);
         } else if (play(resolvedSchemedTalk, Memorize)) {
             Memorize memorize = check resolvedSchemedTalk.cloneWithType();
-            resolvedSchemedTalk.description = memorize.description;
-            printTitle(memorize.description);
-            string|map<string|int> asWhat = check memorize.asWhat.cloneWithType();
-            match asWhat {
-                var key if key is string => {
-                    memory[key] = response;
-                }
-                var fields if fields is map<string|int> => {
-                    foreach [string, string|int] [key, value] in fields.entries() {
-                        if response is map<json> && value is string && response[value] is json {
-                            memory[key] = response[value];
-                        }
-                        if response is json[] && value is int && response[value] is json {
-                            memory[key] = response[value];
-                        }
-                    }
-                }
-            }
+            check processMemorize(resolvedSchemedTalk, memorize, response, memory);
             response = memory;
-            io:println("response of Memorize request is current memory state:");
-            io:println(response);
-            io:println();
+            printResponse("Memorize", response);
             played.push(memorize);
         } else if (play(resolvedSchemedTalk, IsSubset)) {
             IsSubset issubset = check resolvedSchemedTalk.cloneWithType();
@@ -298,9 +281,7 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
             } else {
                 response = isSubset(issubset.values[0], issubset.values[1]);
             }
-            io:println("response of IsSubset is:");
-            io:println(response);
-            io:println();
+            printResponse("IsSubset", response);
             played.push(issubset);
         } else if (play(resolvedSchemedTalk, Equal)) {
             Equal equal = check resolvedSchemedTalk.cloneWithType();
@@ -314,10 +295,29 @@ public function process(SchemedTalk[] schemedTalks, string countryCode, boolean 
             } else {
                 response = equal.values[0] == equal.values[1];
             }
-            io:println("response of Equal is:");
-            io:println(response);
-            io:println();
+            printResponse("Equal", response);
             played.push(equal);
+        } else if (play(resolvedSchemedTalk, Sleep)) {
+            Sleep sleep = check resolvedSchemedTalk.cloneWithType();
+            resolvedSchemedTalk.description = sleep.description;
+            printTitle(sleep.description);
+            map<string> sleepStartEnd = {
+                "sleepStart": "??",
+                "sleepEnd": "??"
+            };
+            time:Utc now = time:utcNow();
+            time:Zone systemZone = check new time:TimeZone();
+            time:Civil nowCivilZoned = systemZone.utcToCivil(now);
+            string nowString = check time:civilToString(nowCivilZoned);
+            sleepStartEnd["sleepStart"] = nowString;
+            runtime:sleep(sleep.seconds);
+            now = time:utcNow();
+            nowCivilZoned = systemZone.utcToCivil(now);
+            nowString = check time:civilToString(nowCivilZoned);
+            sleepStartEnd["sleepEnd"] = nowString;
+            response = sleepStartEnd;
+            printResponse("Sleep", response);
+            played.push(sleep);
         }
 
         if (!play(resolvedSchemedTalk, SchemedTalkDoc)) {
@@ -333,4 +333,50 @@ function printTitle(string text) {
     io:println("-----");
     io:println(text);
     io:println("-----");
+}
+
+function printResponse(string 'type, json response) {
+    io:println(`response of ${'type} is:`);
+    io:println(response);
+    io:println();
+}
+
+function processMemorize(SchemedTalk resolvedSchemedTalk, Memorize memorize, json response, map<json> memory) returns error? {
+    resolvedSchemedTalk.description = memorize.description;
+    printTitle(memorize.description);
+    string|map<string|int> asWhat = check memorize.asWhat.cloneWithType();
+    match asWhat {
+        var key if key is string => {
+            memory[key] = response;
+        }
+        var fields if fields is map<string|int> => {
+            foreach [string, string|int] [key, value] in fields.entries() {
+                if value is string && (<string>value).startsWith("jsonpath:") {
+                    string jsonpathExpression = (<string>value).substring("jsonpath:".length());
+                    if jsonpathExpression.startsWith("first:") {
+                        string jsonpath = (<string>jsonpathExpression).substring("first:".length());
+                        json result = check jsondata:read(response, `${jsonpath}`);
+                        if result is json[] {
+                            result = result[0];
+                        }
+                        memory[key] = result;
+                    } else if jsonpathExpression.trim().startsWith("substring-before(") {
+                        map<string|string[]> functionCall = check decodeFunctionCall(jsonpathExpression.trim());
+                        string jsonpath = (<string[]> functionCall["parameters"])[0];
+                        //if one replaces res by result => ballerina compiler error...
+                        json res = check jsondata:read(response, `${jsonpath}`);
+                        string delimiter = (<string[]> functionCall["parameters"])[1];
+                        memory[key] = check substringBefore(res, delimiter);
+                    } else {
+                        memory[key] = check jsondata:read(response, `${jsonpathExpression}`);
+                    }
+                } else if response is map<json> && value is string && response[value] is json {
+                    memory[key] = response[value];
+                }
+                if response is json[] && value is int && response[value] is json {
+                    memory[key] = response[value];
+                }
+            }
+        }
+    }
 }

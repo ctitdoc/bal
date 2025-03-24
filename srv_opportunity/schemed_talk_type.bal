@@ -186,3 +186,10 @@ type Equal record {
     SchemedTalk[] 'true?;
     SchemedTalk[] 'false?;
 };
+
+type Sleep record {
+    *SchemedTalk;
+    "Sleep" 'type = "Sleep";
+    string description = "Stops execution for the specified number of seconds. Returns the start and end time of the stoped execution.";
+    decimal seconds;
+};
