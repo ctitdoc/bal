@@ -16,16 +16,31 @@
           "3"
         ]
       }
+    ],
+    "PRODIT": [
+      {
+        "type": "AuthProvidersSign_in",
+        "entityId": "272"
+      },
+      {
+        "type": "Users",
+        "pointOfSaleIds": [
+          "344"
+        ],
+        "groupTypes": [
+          "3"
+        ]
+      }
     ]
   },
   {
     "type": "AuthProvidersSign_in",
-    "entityId": "1643"
+    "entityId": "272"
   },
   {
     "type": "Users",
     "pointOfSaleIds": [
-      "2289"
+      "344"
     ],
     "groupTypes": [
       "3"
