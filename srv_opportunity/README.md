@@ -22,7 +22,7 @@ This project is structured around two core components:
 - Future support planned for recursive workflows (i.e., nested SchemedTalks).
 
 ### Data & File Structure
-- Configuration files (e.g., `[SO_SendOpportunity_TEST.json](https://github.com/ctitdoc/bal/blob/main/srv_opportunity/SchemedTalks/SO_SendOpportunity_TEST.json)`) contain:
+- Configuration files (e.g., [SO_SendOpportunity_TEST.json](https://github.com/ctitdoc/bal/blob/main/srv_opportunity/SchemedTalks/SO_SendOpportunity_TEST.json)) contain:
   - Instances of `SchemedTalk` describing a scenario of opportunity creation in SalesForce and transmission to OpenFlex via a Proxy API called SO (for Service Opportunity).
   - Versions for italian and french dealer businesses.
 
