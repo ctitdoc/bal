@@ -18,13 +18,13 @@ This project is structured around two core components:
 - Examples include Salesforce authentication (SFAuth2Token) or opportunity creation.
 
 ### 2. SchemedTalk (Workflow of Requests)
-- A sequence of requests executed in order.
-- Future support planned for recursive workflows (i.e., nested SchemedTalks).
+- A sequence of requests executed in order, re-using responses dats in requests.
+- Future support planned for recursive workflows (i.e., nested SchemedTalks), conditional branching, modular SchemedTalks...
 
 ### Data & File Structure
 - Configuration files (e.g., [SO_SendOpportunity_TEST.json](https://github.com/ctitdoc/bal/blob/main/srv_opportunity/SchemedTalks/SO_SendOpportunity_TEST.json)) contain:
   - Instances of `SchemedTalk` describing a scenario of opportunity creation in SalesForce and transmission to OpenFlex via a Proxy API called SO (for Service Opportunity).
-  - Versions for italian and french dealer businesses.
+  - Versions for italian (PRODIT) and french (PRODFR) dealer businesses.
 
 ### Ballerina Integration
 - [Types](https://github.com/ctitdoc/bal/blob/main/srv_opportunity/schemed_talk_type.bal) and [custom business logic](https://github.com/ctitdoc/bal/blob/main/srv_opportunity/schemed_talks_func.bal#L181) are defined in Ballerina, leveraging its native strengths in integration.
