@@ -1,4 +1,58 @@
-## Composant ballerina srv_opportunity
+# PoC: API Workflow Orchestration using Ballerina
+
+## Overview (For General Audience)
+
+This Proof of Concept (PoC) demonstrates how to orchestrate business workflows across different systems via APIs using Ballerina. It introduces the concept of "Talks"—modular, structured definitions of API interactions designed to simulate real-world business processes.
+
+- **Talks** are defined in JSON format. Each Talk represents a sequence of API requests (e.g., authenticating via OAuth2, then creating a sales opportunity in a CRM like OpenFlex or Salesforce).
+- **Customizable Workflows:** The same Talk logic can be adapted across multiple contexts (e.g., Italian and French dealerships).
+- **Interactive Testing:** Users can copy/paste a JSON Talk configuration into Swagger UI to simulate the workflow without writing code.
+
+## Technical Architecture (For Technical Audience)
+
+This project is structured around two core components:
+
+### 1. Request (Atomic Request)
+- Simple HTTP operations (POST, GET, PATCH).
+- Examples include Salesforce authentication (SFAuth2Token) or opportunity creation.
+
+### 2. SchemedTalk (Workflow of Requests)
+- A sequence of requests executed in order.
+- Supports both unmanaged HTTP calls and managed, typed request objects.
+- Future support planned for recursive workflows (i.e., nested SchemedTalks).
+
+### Data & File Structure
+- Configuration files (e.g., `SO_SendOpportunity_TEST.json`) contain:
+  - Versions for PRODIT (Italy) and PRODFR (France).
+  - Instances of `SchemedTalkDoc` describing the full business workflow.
+
+### Ballerina Integration
+- Types and business logic are defined in Ballerina, leveraging its native strengths in integration.
+- JSON inputs are deserialized into typed Ballerina objects and executed.
+- Key files: `schemed_talk_type.bal`, `talk_runner.bal`, etc.
+
+## Future Roadmap: AI Integration
+A future enhancement will include AI-assisted Talk generation from natural language. Example:
+
+> “Create a sales opportunity in OpenFlex after authenticating with Salesforce.”
+
+The system will parse this input, auto-generate the appropriate JSON structure, and execute the flow.
+
+## Why It Matters
+
+### For Business Users:
+Simplifies complex integrations through configuration, not code. Enables faster iteration and process testing.
+
+### For Developers:
+Provides a modular, type-safe approach to API orchestration using Ballerina. Serves as a foundation for extensible, AI-assisted integration frameworks.
+
+---
+
+🔗 **[View the source code](https://github.com/ctitdoc/bal)**  
+💡 **Live demo available upon request**
+
+
+## Getting Started (in french)
 
 Ce composant permet de tester les API des progiciel OpenFlex (OF) et SalesForce (SF) intégrées dans le service opportunity.  
 Il contient un module "schemed talks" qui permet de définir et exécuter des schemas (json) de requests/responses entre ces API.
