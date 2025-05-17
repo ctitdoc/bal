@@ -18,7 +18,7 @@ This project is structured around two core components:
 - Examples include Salesforce authentication (SFAuth2Token) or opportunity creation.
 
 ### 2. SchemedTalk (Workflow of Requests)
-- A sequence of requests executed in order, re-using responses dats in requests.
+- A sequence of requests executed in order, re-using responses datas in requests.
 - Future support planned for recursive workflows (i.e., nested SchemedTalks), conditional branching, modular SchemedTalks...
 
 ### Data & File Structure
