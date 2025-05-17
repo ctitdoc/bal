@@ -4,32 +4,31 @@
 
 This Proof of Concept (PoC) demonstrates how to orchestrate business workflows across different systems via APIs using Ballerina. It introduces the concept of "Talks"—modular, structured definitions of API interactions designed to simulate real-world business processes.
 
-- **Talks** are defined in JSON format. Each Talk represents a sequence of API requests (e.g., authenticating via OAuth2, then creating a sales opportunity in a CRM like OpenFlex or Salesforce).
+- **Talks** are defined in JSON format. Each Talk represents a workflow of API requests (e.g., authenticating via OAuth2, then creating a sales opportunity in a CRM like [OpenFlex](https://bee2linkgroup.com/) or [Salesforce](https://www.salesforce.com/uk/?ir=1).
 - **Customizable Workflows:** The same Talk logic can be adapted across multiple contexts (e.g., Italian and French dealerships).
-- **Interactive Testing:** Users can copy/paste a JSON Talk configuration into Swagger UI to simulate the workflow without writing code.
+- **Interactive Testing:** Users can copy/paste a JSON Talk configuration into [Swagger UI](https://swagger.io/tools/swagger-ui/) to execute the workflow without writing code.
 
 ## Technical Architecture (For Technical Audience)
 
 This project is structured around two core components:
 
 ### 1. Request (Atomic Request)
-- Simple HTTP operations (POST, GET, PATCH).
+- Supports both basic "unmanaged" requests : HTTP POST, GET, PATCH... with their parameters, body...
+- and managed requests: typed request objects, with validation of their content, custom execution logic...
 - Examples include Salesforce authentication (SFAuth2Token) or opportunity creation.
 
 ### 2. SchemedTalk (Workflow of Requests)
 - A sequence of requests executed in order.
-- Supports both unmanaged HTTP calls and managed, typed request objects.
 - Future support planned for recursive workflows (i.e., nested SchemedTalks).
 
 ### Data & File Structure
-- Configuration files (e.g., `SO_SendOpportunity_TEST.json`) contain:
-  - Versions for PRODIT (Italy) and PRODFR (France).
-  - Instances of `SchemedTalkDoc` describing the full business workflow.
+- Configuration files (e.g., `[SO_SendOpportunity_TEST.json](https://github.com/ctitdoc/bal/blob/main/srv_opportunity/SchemedTalks/SO_SendOpportunity_TEST.json)`) contain:
+  - Instances of `SchemedTalk` describing a scenario of opportunity creation in SalesForce and transmission to OpenFlex via a Proxy API called SO (for Service Opportunity).
+  - Versions for italian and french dealer businesses.
 
 ### Ballerina Integration
-- Types and business logic are defined in Ballerina, leveraging its native strengths in integration.
+- [Types](https://github.com/ctitdoc/bal/blob/main/srv_opportunity/schemed_talk_type.bal) and [custom business logic](https://github.com/ctitdoc/bal/blob/main/srv_opportunity/schemed_talks_func.bal#L181) are defined in Ballerina, leveraging its native strengths in integration.
 - JSON inputs are deserialized into typed Ballerina objects and executed.
-- Key files: `schemed_talk_type.bal`, `talk_runner.bal`, etc.
 
 ## Future Roadmap: AI Integration
 A future enhancement will include AI-assisted Talk generation from natural language. Example:
