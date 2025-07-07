@@ -4,9 +4,12 @@ Ce composant a été créé pour le ticket EA-432, et permet de mettre à jour l
 
 * Ce job test si l'index vient d'être reconstruit, en détectant dans les logs si une commande de move de l'index temporaire en index master plus récente que la dernière execution de ce cron, a eu lieu:
 
-    * si oui, le le champ customerDispo est ajouté à toutes les offres de l'index via cette logique:
 
-        * si le champ disponibiliteForFO vaut 'en stock' et que le champ nature ne vaut ni 1 ('Elite'), ni 5 ('Proxauto VO'), alors customerDispo vaut 'disponible', sinon customerDispo vaut la même valeur que disponibiliteForFO.
+
+  
+* si oui, le champ customerDispo est ajouté à toutes les offres de l'index via cette logique:
+
+    * si le champ disponibiliteForFO vaut 'en stock' et que le champ nature ne vaut ni 1 ('Elite'), ni 5 ('Proxauto VO'), alors customerDispo vaut 'disponible', sinon customerDispo vaut la même valeur que disponibiliteForFO.
 
 
 
@@ -18,9 +21,7 @@ Ce composant a été créé pour le ticket EA-432, et permet de mettre à jour l
 
 
   
-
-
-
+* ce traitement utilise les fonctionnalités algolia de traitement des données par lot de 1000; les test de perf donnent moins d'une minute pour traiter 5000 offres (la volumétrie actuelle de l'index étant de 4500 offres).
 
 
 
@@ -99,5 +100,4 @@ Ce composant a été créé pour le ticket EA-432, et permet de mettre à jour l
     
 
 >>>>
-
 
