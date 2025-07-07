@@ -34,4 +34,6 @@ public function main(string countryCode = "IT", string schemedTalkUri = "./Schem
     if (play("jira")) {
         check jira();
     }
+
+    websocket_job();
 }
