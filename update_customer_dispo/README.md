@@ -9,7 +9,7 @@ Ce composant a été créé pour le ticket EA-432, et permet de mettre à jour l
   
 * si oui, le champ customerDispo est ajouté à toutes les offres de l'index via cette logique:
 
-    * si le champ disponibiliteForFO vaut 'en stock' et que le champ nature ne vaut ni 1 ('Elite'), ni 5 ('Proxauto VO'), alors customerDispo vaut 'disponible', sinon customerDispo vaut la même valeur que disponibiliteForFO.
+    * si le champ disponibiliteForFO vaut 'en stock' et que le champ nature ne vaut ni 1 ('Elite'), ni 5 ('Proxauto VO'), alors customerDispo vaut 'disponible', sinon customerDispo vaut la même valeur que disponibiliteForFO;
 
 
 
@@ -21,7 +21,12 @@ Ce composant a été créé pour le ticket EA-432, et permet de mettre à jour l
 
 
   
-* ce traitement utilise les fonctionnalités algolia de traitement des données par lot de 1000; les test de perf donnent moins d'une minute pour traiter 5000 offres (la volumétrie actuelle de l'index étant de 4500 offres).
+* ce traitement utilise les fonctionnalités algolia de traitement des données par lot de 1000; les test de perf donnent moins d'une minute pour traiter 5000 offres (la volumétrie actuelle de l'index étant de 4500 offres);
+
+
+
+  
+* D'autre part, les jobs ballerina supportent nativement les non concurrences d'exécution de leur tâche, c'est à dire que, contrairement à un cron classique, la tâche de la minute suivante n'est pas lancée tant que la tâche de la minute précédente n'est pas terminée (avec une logique paramétrable si cette dernière ne termine jamais).
 
 
 
