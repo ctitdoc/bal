@@ -2,7 +2,7 @@
 
 Ce composant a été créé pour le ticket EA-432, et permet de mettre à jour le champ customerDispo dans l'index des offres algolia du site http://www.elite-auto.fr, via un job Ballerina exécuté toutes les minutes:
 
-* Ce job test si l'index vient d'être reconstruit, en détectant dans les logs si une commande de move de l'index temporaire en index master plus récente que la dernière execution de ce cron, a eu lieu:
+* Ce job test si l'index vient d'être reconstruit, en détectant, via une requete dans les log algolia, si une commande de move de l'index temporaire en index master plus récente que la dernière execution de ce cron, a eu lieu:
 
 
 
@@ -105,4 +105,3 @@ Ce composant a été créé pour le ticket EA-432, et permet de mettre à jour l
     
 
 >>>>
-
