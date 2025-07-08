@@ -4,6 +4,7 @@ import ballerina/io;
 //import ballerina/lang.runtime;
 import ballerina/log;
 import ballerina/task;
+import ballerina/lang.runtime;
 
 // === CONFIG STRUCTURES ===
 
@@ -30,7 +31,7 @@ configurable AlgoliaConf algolia = ?;
 configurable TeamsConf teams = ?;
 configurable CustomerDispoConf customerDispo = ?;
 
-const int BATCH_SIZE = 1000;
+const int BATCH_SIZE = 10000;
 const string STATE_FILE = "last_customerDispo_update.txt";
 
 // === STATE FILE ===
@@ -93,7 +94,7 @@ class Job {
                 string msg = "❌ scheduledRun() a échoué : " + result.message();
                 log:printError(msg, result);
                 // Envoi d'une notification Teams en cas d'erreur
-                var notif = self.sendTeamsNotification("Erreur exécution customerDispo", msg, ["Tâche planifiée"]);
+                var notif = self.sendTeamsNotification("Erreur exécution customerDispo", msg, [{"Type d'exécution": "Tâche planifiée"}]);
                 if notif is error {
                     log:printError("Échec d'envoi Teams", notif);
                 }
@@ -108,7 +109,7 @@ class Job {
         string? lastRun = check getLastRunTimestamp();
         log:printInfo("Last run timestamp: " + (lastRun ?: "none"));
 
-        map<json> logData = check algoliaClient->get("/1/logs?length=1000&type=update", self.headers);
+        map<json> logData = check algoliaClient->get("/1/logs?length=" + BATCH_SIZE.toString() + "&type=update", self.headers);
         //map<json> logData = check (check logRes.getJsonPayload()).cloneWithType();
         json logsJson = logData["logs"];
         string? latestMoveTimestamp = ();
@@ -147,7 +148,7 @@ class Job {
                     string errMsg = "Erreur lors de l'update customerDispo: " + result.message();
                     log:printError(errMsg);
                     // Envoi de notification Teams pour l'erreur
-                    check self.sendTeamsNotification("Erreur Update customerDispo", errMsg, ["Algolia index: " + self.algolia.indexName]);
+                    check self.sendTeamsNotification("Erreur Update customerDispo", errMsg, [{"Algolia index": self.algolia.indexName}]);
                 } else {
                     log:printInfo("Mise à jour customerDispo effectuée avec succès.");
                 }
@@ -239,25 +240,25 @@ class Job {
                 totalUpdated += updates.length();
             }
 
-            //runtime:sleep(1000);
+            runtime:sleep(1);
         }
 
         log:printInfo("customerDispo update finished.");
 
         if self.customerDispo.dryRun && self.customerDispo.dryRunNotify {
             string msg = "**[Dry-run OK]** Mise à jour customerDispo simulée sur " + totalUpdated.toString() + " enregistrements.";
-            check self.sendTeamsNotification("Update customer dispo dry-run", msg, ["Algolia index: " + self.algolia.indexName]);
+            check self.sendTeamsNotification("Update customer dispo dry-run", msg, [{"Algolia index": self.algolia.indexName}]);
         }
     }
 
 // === TEAMS NOTIF ===
-    function sendTeamsNotification(string title, string description, string[] list = ["update customerDispo dry run OK!"]) returns error? {
+    function sendTeamsNotification(string title, string description, map<string>[] list) returns error? {
         http:Client teamsClient = check new (self.teams.webhookUrl);
         json payload = {
             title: title,
             description: description,
             channel_id: self.teams.channelId,
-            list: list
+            list: []
         };
 
         // Envoi réel de la notification via POST
