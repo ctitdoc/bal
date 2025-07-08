@@ -1,10 +1,9 @@
 import ballerina/file;
 import ballerina/http;
 import ballerina/io;
-//import ballerina/lang.runtime;
+import ballerina/lang.runtime;
 import ballerina/log;
 import ballerina/task;
-import ballerina/lang.runtime;
 
 // === CONFIG STRUCTURES ===
 
@@ -85,7 +84,7 @@ class Job {
 
     }
 
-// === SCHEDULED EXECUTION FUNCTIONS ===
+    // === SCHEDULED EXECUTION FUNCTIONS ===
     public function execute() {
         do {
             log:printInfo("⏱️ Job planifié : exécution de scheduledRun()");
@@ -164,7 +163,7 @@ class Job {
 
     }
 
-// === CUSTOMER DISPO BUSNESS LOGIC FUNTION ===
+    // === CUSTOMER DISPO BUSNESS LOGIC FUNTION ===
     public function updateCustomerDispo(http:Client algoliaClient) returns error? {
         string cursor = "";
         boolean hasMore = true;
@@ -251,7 +250,7 @@ class Job {
         }
     }
 
-// === TEAMS NOTIF ===
+    // === TEAMS NOTIF ===
     function sendTeamsNotification(string title, string description, map<string>[] list) returns error? {
         http:Client teamsClient = check new (self.teams.webhookUrl);
         json payload = {
