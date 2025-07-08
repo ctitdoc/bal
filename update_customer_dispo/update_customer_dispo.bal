@@ -212,7 +212,7 @@ class Job {
                         dispo = check hit["disponibiliteForFO"].cloneWithType();
                     }
                 }
-                if id == "" || dispo == "" {
+                if id == "" || dispo == "" { // for update test on a single offre, add this condition with a proper offer id: || id != "240314"
                     continue;
                 }
 
